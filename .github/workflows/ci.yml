@@ -1,0 +1,109 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  cli-tests:
+    name: CLI Tests (PHP 8.2)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: pdo_sqlite, openssl, zip, mbstring, json
+          coverage: xdebug
+
+      - name: Install CLI dependencies
+        working-directory: contextbridge
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Run CLI tests
+        working-directory: contextbridge
+        run: php vendor/bin/pest
+        env:
+          CB_KEY_PATH: /tmp/cb_test_key
+          CB_TOKEN_PATH: /tmp/cb_test_token
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          files: movez/coverage.xml
+          flags: cli
+        continue-on-error: true
+        if: false
+
+  web-tests:
+    name: Web Tests (PHP 8.2 + Node 20)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: pdo_sqlite, mbstring, openssl, zip, bcmath
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install PHP dependencies
+        working-directory: web
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Install Node dependencies
+        working-directory: web
+        run: npm ci
+
+      - name: Build frontend assets
+        working-directory: web
+        run: npm run build
+
+      - name: Setup environment
+        working-directory: web
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          touch database/database.sqlite
+
+      - name: Run migrations
+        working-directory: web
+        run: php artisan migrate --force
+
+      - name: Run web PHP tests
+        working-directory: web
+        run: php artisan test
+
+  extension-build:
+    name: VS Code Extension Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: vscode-extension/package-lock.json
+
+      - name: Install extension dependencies
+        working-directory: vscode-extension
+        run: npm ci
+
+      - name: TypeScript type check
+        working-directory: vscode-extension
+        run: npx tsc --noEmit
+
+      - name: Run extension tests
+        working-directory: vscode-extension
+        run: npm test
+        continue-on-error: true

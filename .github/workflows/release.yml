@@ -1,0 +1,67 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-phar:
+    name: Build CLI PHAR
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: pdo_sqlite, openssl, zip, mbstring
+
+      - name: Install CLI dependencies (no dev)
+        working-directory: contextbridge
+        run: composer install --no-dev --optimize-autoloader --no-interaction
+
+      - name: Build PHAR
+        working-directory: contextbridge
+        run: php movez app:build movez --build-version=${{ github.ref_name }} --no-interaction
+
+      - name: Upload PHAR to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: contextbridge/builds/movez
+          name: MoveZ ${{ github.ref_name }}
+          body: |
+            ## MoveZ ${{ github.ref_name }}
+
+            ### Installation
+            ```bash
+            chmod +x movez
+            mv movez /usr/local/bin/movez
+            movez doctor
+            ```
+
+  build-vsix:
+    name: Build VS Code Extension
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install extension dependencies
+        working-directory: vscode-extension
+        run: npm ci
+
+      - name: Package extension
+        working-directory: vscode-extension
+        run: npx vsce package --no-dependencies
+
+      - name: Upload VSIX to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: vscode-extension/*.vsix

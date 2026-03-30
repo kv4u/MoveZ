@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Build artifacts
+electron-app/dist/
+electron-app/out/
+contextbridge/contextbridge.phar
+contextbridge/box.phar
+contextbridge/builds/
+vscode-extension/*.vsix
+
+# Bundled runtime binaries (downloaded during setup, not source)
+electron-app/resources/php/
+electron-app/resources/*.phar
+
+# Environment & secrets
+.env
+web/.env
+web/.env.backup
+*.key
+
+# Databases
+*.sqlite
+*.sqlite-journal
+
+# IDE & OS
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+Thumbs.db
+.DS_Store
+
+# Claude Code local settings
+.claude/
+
+# Logs
+*.log
+npm-debug.log*
+
+# PHP
+.phpunit.result.cache
+.php-cs-fixer.cache
+
+# Personal utility scripts
+contextbridge/bundle_export.php
+contextbridge/make_cbz.php
