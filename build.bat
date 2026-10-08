@@ -18,6 +18,11 @@ set ELECTRON_APP=%~dp0electron-app
 :: -----------------------------------------------
 echo [1/3] Building movez.phar ...
 cd /d "%PHAR_SRC%"
+if not exist "%PHAR_SRC%\box.phar" (
+    echo [ERROR] movez\box.phar not found. Download it from https://github.com/box-project/box/releases
+    pause
+    exit /b 1
+)
 "%BUNDLED_PHP%" -d phar.readonly=0 box.phar compile --composer-bin "%COMPOSER_BAT%"
 if errorlevel 1 (
     echo [ERROR] PHAR build failed.
@@ -29,6 +34,11 @@ if errorlevel 1 (
 :: Step 2 - Copy PHAR to Electron resources
 :: -----------------------------------------------
 echo [2/3] Copying PHAR to electron-app\resources\ ...
+if not exist "%PHAR_SRC%\movez.phar" (
+    echo [ERROR] movez\movez.phar was not produced by Box.
+    pause
+    exit /b 1
+)
 copy /y "%PHAR_SRC%\movez.phar" "%PHAR_DEST%"
 if errorlevel 1 (
     echo [ERROR] Could not copy PHAR.

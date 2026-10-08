@@ -5,10 +5,13 @@ vendor/
 # Build artifacts
 electron-app/dist/
 electron-app/out/
-contextbridge/contextbridge.phar
-contextbridge/box.phar
-contextbridge/builds/
+movez/movez.phar
+movez/box.phar
+movez/builds/
 vscode-extension/*.vsix
+vscode-extension/out/
+web/public/build/
+*.tsbuildinfo
 
 # Bundled runtime binaries (downloaded during setup, not source)
 electron-app/resources/php/
@@ -45,5 +48,5 @@ npm-debug.log*
 .php-cs-fixer.cache
 
 # Personal utility scripts
-contextbridge/bundle_export.php
-contextbridge/make_cbz.php
+movez/bundle_export.php
+movez/make_cbz.php
