@@ -3,6 +3,7 @@ import { onMounted, ref, computed } from 'vue'
 import { useSessionsStore } from '@/stores/sessions'
 import SessionCard from '@/components/SessionCard.vue'
 import ToolBadge from '@/components/ToolBadge.vue'
+import { READABLE_TOOLS, WRITABLE_TOOLS } from '@/tools'
 
 const sessions   = useSessionsStore()
 const activeTool = ref<string>('all')
@@ -129,7 +130,7 @@ async function bundleSelected() {
     : 'Export failed: ' + result.output
 }
 
-const tools = ['all', 'cursor', 'windsurf', 'claude-code', 'codex', 'copilot-cli', 'cline', 'continue']
+const tools = ['all', ...READABLE_TOOLS]
 </script>
 
 <template>
@@ -210,7 +211,7 @@ const tools = ['all', 'cursor', 'windsurf', 'claude-code', 'codex', 'copilot-cli
         <label class="block text-xs text-slate-400 mb-1">Import into tool</label>
         <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
           <button
-            v-for="tool in tools.filter(t => t !== 'all')"
+            v-for="tool in WRITABLE_TOOLS"
             :key="tool"
             class="p-2 rounded-lg border text-left transition-all"
             :class="importTool === tool

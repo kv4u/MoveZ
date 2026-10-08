@@ -3,6 +3,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 export const bridge = {
   // Sessions
   listSessions:   (tool?: string) => ipcRenderer.invoke('sessions:list', tool),
+  getSession:     (tool: string, id: string) => ipcRenderer.invoke('sessions:get', tool, id),
   exportSessions: (opts: unknown) => ipcRenderer.invoke('sessions:export', opts),
   importSessions: (opts: unknown) => ipcRenderer.invoke('sessions:import', opts),
 

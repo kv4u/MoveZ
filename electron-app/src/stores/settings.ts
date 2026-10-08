@@ -5,6 +5,7 @@ import type { Settings } from '@/types/bridge'
 export const useSettingsStore = defineStore('settings', () => {
   const settings = ref<Settings>({
     cliPath:   'movez',
+    phpPath:   'php',
     serverUrl: '',
     token:     '',
     darkMode:  true

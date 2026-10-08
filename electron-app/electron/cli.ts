@@ -17,7 +17,7 @@ function bundledPhpPath(): string {
   const base = app.isPackaged
     ? process.resourcesPath
     : join(__dirname, '../../resources')
-  return join(base, 'php', 'php.exe')
+  return join(base, 'php', process.platform === 'win32' ? 'php.exe' : 'php')
 }
 
 /** Path to bundled PHAR inside the installed app resources */
@@ -50,13 +50,20 @@ function buildSpawnArgs(cliPath: string, args: string[]): { cmd: string; cmdArgs
   return { cmd: cliPath, cmdArgs: args }
 }
 
-export function runCli(args: string[]): Promise<CliResult> {
+/** Extra environment for the CLI — used for secrets (MOVEZ_TOKEN) so they never appear in process lists. */
+type CliEnv = Record<string, string>
+
+function spawnOptions(env?: CliEnv) {
+  return { windowsHide: true, env: { ...process.env, ...env } }
+}
+
+export function runCli(args: string[], env?: CliEnv): Promise<CliResult> {
   return new Promise((resolve) => {
     const { cmd, cmdArgs } = buildSpawnArgs(getCliPath(), args)
     const chunks: Buffer[] = []
     const errChunks: Buffer[] = []
 
-    const proc = spawn(cmd, cmdArgs, { windowsHide: true })
+    const proc = spawn(cmd, cmdArgs, spawnOptions(env))
 
     proc.stdout.on('data', (d) => chunks.push(Buffer.from(d)))
     proc.stderr.on('data', (d) => errChunks.push(Buffer.from(d)))
@@ -78,10 +85,11 @@ export function runCli(args: string[]): Promise<CliResult> {
 export function streamCli(
   args: string[],
   onData: (line: string) => void,
-  onDone: (code: number) => void
+  onDone: (code: number) => void,
+  env?: CliEnv
 ): void {
   const { cmd, cmdArgs } = buildSpawnArgs(getCliPath(), args)
-  const proc = spawn(cmd, cmdArgs, { windowsHide: true })
+  const proc = spawn(cmd, cmdArgs, spawnOptions(env))
 
   proc.stdout.on('data', (d: Buffer) => {
     d.toString('utf8').split('\n').filter(Boolean).forEach(onData)

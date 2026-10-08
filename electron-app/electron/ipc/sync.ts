@@ -8,7 +8,8 @@ export function registerSyncHandlers(): void {
     tool?: string
     project?: string
   }) => {
-    const args = ['sync:push', `--token=${opts.token}`, `--server=${opts.server}`]
+    // Token is passed via MOVEZ_TOKEN, never as an argument (visible in process lists)
+    const args = ['sync:push', `--server=${opts.server}`]
     if (opts.tool) args.push(`--tool=${opts.tool}`)
     if (opts.project) args.push(`--project=${opts.project}`)
 
@@ -22,7 +23,8 @@ export function registerSyncHandlers(): void {
           lines.push(line)
           win?.webContents.send('sync:log', line)
         },
-        (code) => resolve({ success: code === 0, output: lines.join('\n') })
+        (code) => resolve({ success: code === 0, output: lines.join('\n') }),
+        { MOVEZ_TOKEN: opts.token }
       )
     })
   })
@@ -35,7 +37,7 @@ export function registerSyncHandlers(): void {
     fromPath?: string
     toPath?: string
   }) => {
-    const args = ['sync:pull', `--token=${opts.token}`, `--server=${opts.server}`, `--tool=${opts.tool}`]
+    const args = ['sync:pull', `--server=${opts.server}`, `--tool=${opts.tool}`]
     if (opts.project) args.push(`--project=${opts.project}`)
     if (opts.fromPath) args.push(`--from-path=${opts.fromPath}`)
     if (opts.toPath) args.push(`--to-path=${opts.toPath}`)
@@ -50,7 +52,8 @@ export function registerSyncHandlers(): void {
           lines.push(line)
           win?.webContents.send('sync:log', line)
         },
-        (code) => resolve({ success: code === 0, output: lines.join('\n') })
+        (code) => resolve({ success: code === 0, output: lines.join('\n') }),
+        { MOVEZ_TOKEN: opts.token }
       )
     })
   })

@@ -21,6 +21,16 @@ export function registerSessionHandlers(): void {
     }
   })
 
+  // Load one session with all of its turns (list-sessions may only return metadata)
+  ipcMain.handle('sessions:get', async (_event, tool: string, id: string) => {
+    const result = await runCli(['show', `--tool=${tool}`, `--id=${id}`, '--json'])
+    if (result.code !== 0) {
+      throw new Error(result.stderr || result.stdout || 'Session not found')
+    }
+
+    return JSON.parse(result.stdout)
+  })
+
   // Export sessions to a .cbz bundle
   ipcMain.handle('sessions:export', async (_event, opts: {
     tool: string

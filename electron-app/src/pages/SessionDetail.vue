@@ -18,17 +18,19 @@ onMounted(async () => {
   const tool = route.params.tool as string
   const id   = route.params.id as string
 
-  // Use cached store data first — avoids reloading all sessions
-  const cached = sessions.find(tool, id)
-  if (cached) {
-    session.value = cached
-    loading.value = false
-    return
-  }
-  // Store not loaded yet — load just this tool then find
   try {
-    await sessions.load(tool)
-    const found = sessions.find(tool, id)
+    // The list may only hold metadata (no turns) for large tools like Claude Code,
+    // so fetch the full session from the CLI when the turns are missing.
+    let found = sessions.find(tool, id)
+    if (!found) {
+      await sessions.load(tool)
+      found = sessions.find(tool, id)
+    }
+
+    if (found && (found.turns?.length ?? 0) === 0 && (found.turn_count ?? 0) > 0) {
+      found = await window.bridge.getSession(tool, id)
+    }
+
     session.value = found ?? null
     if (!found) error.value = 'Session not found'
   } catch (e) {
@@ -89,13 +91,13 @@ async function exportSession() {
       <!-- Turns -->
       <div class="space-y-6">
         <TurnBlock
-          v-for="(turn, i) in (session as any).turns ?? []"
+          v-for="(turn, i) in session.turns ?? []"
           :key="i"
           :turn="turn"
           :index="i"
         />
-        <div v-if="!(session as any).turns?.length" class="py-8 text-center text-slate-500 text-sm">
-          No turns in this session. The CLI may need to be updated to include full turn data.
+        <div v-if="!session.turns?.length" class="py-8 text-center text-slate-500 text-sm">
+          No turns in this session.
         </div>
       </div>
     </template>
