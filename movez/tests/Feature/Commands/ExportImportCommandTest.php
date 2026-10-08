@@ -108,3 +108,18 @@ it('windsurf is reported as unsupported rather than silently empty', function ()
 it('inspire boilerplate command is gone', function (): void {
     expect(array_keys(\Illuminate\Support\Facades\Artisan::all()))->not->toContain('inspire');
 });
+
+it('show returns a single session with its turns', function (): void {
+    withTempDir(function (string $dir): void {
+        seedClaudeSession($dir . '/claude', 'sess-a', '/work/alpha', 'Alpha task');
+        seedClaudeSession($dir . '/claude', 'sess-b', '/work/beta', 'Beta task');
+        config(["movez.tools.claude-code.storage.{$this->os}" => $dir . '/claude']);
+
+        $this->artisan('show', ['--tool' => 'claude-code', '--id' => 'sess-b', '--json' => true])
+            ->expectsOutputToContain('"title": "Beta task"')
+            ->assertExitCode(0);
+
+        $this->artisan('show', ['--tool' => 'claude-code', '--id' => 'missing'])
+            ->assertExitCode(1);
+    });
+});

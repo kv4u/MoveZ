@@ -145,85 +145,110 @@ class ClaudeCodeParser extends JsonlParser implements ParserInterface
         $sessions = collect();
 
         foreach ($files as $file) {
-            $lines = $this->readJsonlFile($file);
-            if (empty($lines)) {
-                continue;
+            $session = $this->parseFile($file);
+            if ($session !== null) {
+                $sessions->push($session);
             }
-
-            $sessionId = pathinfo($file, PATHINFO_FILENAME);
-            $turns     = collect();
-            $createdAt = null;
-            $lastAt    = null;
-
-            $firstUserContent = null;
-            $cwd              = null;
-
-            foreach ($lines as $line) {
-                if (!is_array($line)) {
-                    continue;
-                }
-
-                // Real Claude Code format: type=user|assistant with nested message object
-                $type = $line['type'] ?? null;
-                if (!in_array($type, ['user', 'assistant'], true)) {
-                    continue;
-                }
-
-                if ($cwd === null && is_string($line['cwd'] ?? null)) {
-                    $cwd = $line['cwd'];
-                }
-
-                $msg  = is_array($line['message'] ?? null) ? $line['message'] : [];
-                $role = $msg['role'] ?? $type;
-
-                // Content is a string or an array of blocks; thinking/tool blocks are dropped
-                $rawContent = ContentFlattener::flatten($msg['content'] ?? '');
-                if (trim($rawContent) === '') {
-                    continue; // e.g. tool_result-only entries
-                }
-
-                $ts = Carbon::parse($line['timestamp'] ?? 'now');
-
-                if ($createdAt === null) {
-                    $createdAt = $ts;
-                }
-                $lastAt = $ts;
-
-                if ($firstUserContent === null && $role === 'user') {
-                    $firstUserContent = $rawContent;
-                }
-
-                $turns->push(new TurnDTO(
-                    role:            $role,
-                    content:         (string) $rawContent,
-                    timestamp:       $ts,
-                    filesReferenced: [],
-                    fileDiffs:       collect(),
-                    reasoningTrace:  null,
-                    toolCalls:       [],
-                ));
-            }
-
-            $project = $this->projectName($cwd, basename(dirname($file)));
-
-            // Use first user message as title (truncated to 80 chars)
-            $title = $firstUserContent !== null
-                ? mb_substr(trim($firstUserContent), 0, 80)
-                : basename($file);
-
-            $sessions->push(new SessionDTO(
-                id:               $sessionId,
-                title:            $title,
-                sourceTool:       $this->toolName(),
-                sourceMachineSha: $this->machineSha(),
-                createdAt:        $createdAt ?? Carbon::now(),
-                lastActiveAt:     $lastAt ?? Carbon::now(),
-                turns:            $turns,
-                project:          $project,
-            ));
         }
 
         return $sessions;
+    }
+
+    /**
+     * Parse a single session by id without reading every transcript —
+     * Claude Code stores one file per session, named after its id.
+     */
+    public function findById(string $projectPath, string $id): ?SessionDTO
+    {
+        $storagePath = $this->getStoragePath($projectPath);
+        $id          = basename($id);
+
+        $files = array_merge(
+            glob($storagePath . '/' . $id . '.jsonl') ?: [],
+            glob($storagePath . '/*/' . $id . '.jsonl') ?: [],
+        );
+
+        return $files === [] ? null : $this->parseFile($files[0]);
+    }
+
+    private function parseFile(string $file): ?SessionDTO
+    {
+        $lines = $this->readJsonlFile($file);
+        if (empty($lines)) {
+            return null;
+        }
+
+        $sessionId = pathinfo($file, PATHINFO_FILENAME);
+        $turns     = collect();
+        $createdAt = null;
+        $lastAt    = null;
+
+        $firstUserContent = null;
+        $cwd              = null;
+
+        foreach ($lines as $line) {
+            if (!is_array($line)) {
+                continue;
+            }
+
+            // Real Claude Code format: type=user|assistant with nested message object
+            $type = $line['type'] ?? null;
+            if (!in_array($type, ['user', 'assistant'], true)) {
+                continue;
+            }
+
+            if ($cwd === null && is_string($line['cwd'] ?? null)) {
+                $cwd = $line['cwd'];
+            }
+
+            $msg  = is_array($line['message'] ?? null) ? $line['message'] : [];
+            $role = $msg['role'] ?? $type;
+
+            // Content is a string or an array of blocks; thinking/tool blocks are dropped
+            $rawContent = ContentFlattener::flatten($msg['content'] ?? '');
+            if (trim($rawContent) === '') {
+                continue; // e.g. tool_result-only entries
+            }
+
+            $ts = Carbon::parse($line['timestamp'] ?? 'now');
+
+            if ($createdAt === null) {
+                $createdAt = $ts;
+            }
+            $lastAt = $ts;
+
+            if ($firstUserContent === null && $role === 'user') {
+                $firstUserContent = $rawContent;
+            }
+
+            $turns->push(new TurnDTO(
+                role:            $role,
+                content:         (string) $rawContent,
+                timestamp:       $ts,
+                filesReferenced: [],
+                fileDiffs:       collect(),
+                reasoningTrace:  null,
+                toolCalls:       [],
+            ));
+        }
+
+        $project = $this->projectName($cwd, basename(dirname($file)));
+
+        // Use first user message as title (truncated to 80 chars)
+        $title = $firstUserContent !== null
+            ? mb_substr(trim($firstUserContent), 0, 80)
+            : basename($file);
+
+        return new SessionDTO(
+            id:               $sessionId,
+            title:            $title,
+            sourceTool:       $this->toolName(),
+            sourceMachineSha: $this->machineSha(),
+            createdAt:        $createdAt ?? Carbon::now(),
+            lastActiveAt:     $lastAt ?? Carbon::now(),
+            turns:            $turns,
+            project:          $project,
+        );
     }
 
     /**
