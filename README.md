@@ -1,311 +1,261 @@
-# MoveZ
+<h1 align="center">MoveZ</h1>
 
-**Unified AI coding session transfer — cross-tool AND cross-machine.**
+<p align="center">
+  <strong>Move your AI coding sessions between tools <em>and</em> between machines.</strong><br>
+  Cursor · Claude Code · Codex · Copilot CLI · Cline · Continue
+</p>
 
-Transfer sessions between Cursor, Windsurf, Claude Code, Codex, Copilot CLI, Cline, and Continue.
-Sync encrypted sessions across machines via a self-hosted server.
-
----
-
-## Quick Start (Desktop App)
-
-The easiest way to use MoveZ is through the desktop app — no terminal needed.
-
-### 1. Install
-
-Download `MoveZ Setup 1.0.0.exe` from [Releases](https://github.com/kv4u/MoveZ/releases) and run the installer.
-
-> The installer bundles PHP and the CLI automatically — no extra dependencies required.
-
-### 2. Open the App
-
-Launch **MoveZ** from the Start Menu. You'll see a sidebar with these sections:
-
-| Section | What it does |
-|---|---|
-| **Dashboard** | Overview of detected AI tools and session counts |
-| **Sessions** | Browse all sessions from all your AI tools |
-| **Migrate** | Transfer sessions from one tool to another |
-| **Sync** | Push/pull encrypted sessions to a sync server |
-| **Doctor** | Check that everything is working |
-| **Settings** | Configure CLI path, PHP path, sync server |
-
-### 3. Export Sessions (Backup)
-
-1. Go to **Sessions**
-2. Select a tool tab (e.g. Cursor, Claude Code)
-3. Check the sessions you want to export
-4. Click **Export Selected** → choose a save location
-5. A `.cbz` bundle file is created — this is your portable backup
-
-### 4. Import Sessions (Restore)
-
-1. Go to **Sessions**
-2. Click **Import**
-3. Select your `.cbz` bundle file
-4. Choose the target tool (e.g. Cursor, Windsurf)
-5. Optionally remap project paths if your folder structure changed
-6. Click **Import** — sessions appear in the target tool
-
-### 5. Transfer Between Tools
-
-1. Go to **Migrate**
-2. Select **From** tool (e.g. Cursor) and **To** tool (e.g. Claude Code)
-3. Set the project directory
-4. Click **Start Migration**
-5. Sessions are read from the source and written to the target tool
-
-### 6. Run Doctor (Troubleshooting)
-
-Click **Doctor** to verify:
-- PHP is available and the right version
-- All AI tool storage directories are detected
-- SQLite extensions are loaded
-- Encryption key exists
+<p align="center">
+  <a href="https://github.com/kv4u/MoveZ/actions/workflows/ci.yml"><img src="https://github.com/kv4u/MoveZ/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/kv4u/MoveZ/releases/latest"><img src="https://img.shields.io/github/v/release/kv4u/MoveZ?sort=semver" alt="Latest release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT license"></a>
+  <img src="https://img.shields.io/badge/PHP-8.2%2B-777bb4.svg" alt="PHP 8.2+">
+</p>
 
 ---
 
-## Quick Start (CLI)
+## Why MoveZ?
 
-For power users who prefer the terminal.
+Your conversations with AI coding assistants hold real project context. Switching tools or laptops usually means losing it.
 
-### Install
+| | Cross-tool | Cross-machine | Tools covered |
+|---|:---:|:---:|---|
+| cli-continues | ✅ | ❌ | 14 agents |
+| cursor-chat-transfer | ❌ | ✅ | Cursor only |
+| claude-conversation-extractor | ❌ | ✅ | Claude Code only |
+| **MoveZ** | ✅ | ✅ | 6 tools (read), 4 tools (write) |
+
+With MoveZ you can:
+
+- **Back up** sessions to a portable `.cbz` bundle, optionally AES-256-GCM encrypted.
+- **Transfer** sessions from one tool to another, e.g. Cursor → Claude Code.
+- **Migrate** to a new machine, remapping project paths (`D:\Projects` → `C:\Work`).
+- **Sync** through a self-hosted server. Sessions are encrypted before they leave your machine.
+
+---
+
+## Get MoveZ
+
+Everything is on the [latest release](https://github.com/kv4u/MoveZ/releases/latest):
+
+| Download | For | Needs |
+|---|---|---|
+| `MoveZ-Setup-<version>.exe` | Windows desktop app | Nothing, PHP and the CLI are bundled |
+| `movez.phar` | CLI on macOS, Linux, Windows | PHP 8.2+ with `pdo_sqlite`, `openssl`, `zip`, `mbstring` |
+| `movez-vscode.vsix` | VS Code / Cursor extension | The CLI (above) |
+
+### CLI install
 
 ```bash
-# Download the PHAR
 curl -L https://github.com/kv4u/MoveZ/releases/latest/download/movez.phar -o movez
 chmod +x movez
 sudo mv movez /usr/local/bin/movez
-
-# Verify installation
 movez doctor
 ```
 
-On Windows (with PHP installed):
-```powershell
-# Download movez.phar to a folder in your PATH
-php movez.phar doctor
-```
+On Windows, run it through PHP: `php movez.phar doctor`.
 
-### Common Workflows
+`movez doctor` checks PHP and its extensions, your encryption key, and which AI tools it finds on this machine.
 
-**Backup all Cursor sessions:**
+---
+
+## Quick start
+
 ```bash
+# See what's on this machine
+movez list-sessions
+movez list-sessions --tool=claude-code --project=. --json
+
+# Back up all Cursor sessions to a bundle
 movez export --tool=cursor --output=cursor-backup.cbz
-```
 
-**Restore to a new machine:**
-```bash
-movez import --input=cursor-backup.cbz --tool=cursor
-```
+# Back up only this project's Claude Code sessions, encrypted
+movez export --tool=claude-code --project=. --output=claude.cbz --encrypt
 
-**Transfer Cursor sessions to Claude Code:**
-```bash
+# Restore a bundle into Claude Code on a new machine, fixing paths
+movez import --input=cursor-backup.cbz --tool=claude-code \
+  --project=/home/me/work/my-app \
+  --from-path="D:/Projects" --to-path="/home/me/work"
+
+# Copy sessions from one tool to another in one step
 movez transfer --from=cursor --to=claude-code --project=/path/to/project
+
+# Read one full session
+movez show --tool=claude-code --id=<session-id>
 ```
 
-**Remap paths when restoring on a different machine:**
-```bash
-movez import --input=backup.cbz --tool=cursor \
-  --from-path=/old/machine/projects \
-  --to-path=/new/machine/projects
-```
-
-**Encrypted backup:**
-```bash
-movez export --tool=cursor --output=backup.cbz --encrypt
-# Encryption key is auto-generated at ~/.movez/key
-```
-
-**List sessions without exporting:**
-```bash
-movez list-sessions --tool=cursor
-movez list-sessions --tool=claude-code --json
-```
-
-**Sync across machines (requires self-hosted server):**
-```bash
-# On machine A — push
-movez sync:push --token=YOUR_TOKEN --server=https://your-server.com
-
-# On machine B — pull
-movez sync:pull --token=YOUR_TOKEN --server=https://your-server.com --tool=cursor
-```
+`--project` limits a command to sessions whose project folder matches the given path. Leave it out to include every project.
 
 ---
 
-## All CLI Commands
+## Commands
 
-| Command | Description |
-|---|---|
-| `movez export` | Export sessions to a `.cbz` bundle |
-| `movez import` | Import sessions from a `.cbz` bundle |
-| `movez transfer` | Export + import in one step |
-| `movez package` | Package raw session files into a `.cbz` |
-| `movez unpack` | Extract a `.cbz` bundle |
-| `movez list-sessions` | List detected sessions |
-| `movez sync:push` | Push encrypted sessions to sync server |
-| `movez sync:pull` | Pull sessions from sync server |
-| `movez doctor` | Check system requirements |
-
-Use `--help` on any command for full options:
-```bash
-movez export --help
-```
-
----
-
-## Supported Tools
-
-| Tool | Read | Write | Format |
-|---|---|---|---|
-| Cursor | Yes | Yes | SQLite + JSONL (3-layer) |
-| Windsurf | Yes | Yes | SQLite |
-| Claude Code | Yes | Yes | JSONL |
-| Codex | Yes | Yes | JSONL |
-| Copilot CLI | Yes | Yes | JSON |
-| Cline | Yes | — | JSON |
-| Continue | Yes | — | SQLite |
-
----
-
-## Importing into Cursor (Important!)
-
-Cursor uses a 3-layer storage system. MoveZ writes to all three so imported sessions appear correctly in the sidebar with full conversation history.
-
-### Before You Import
-
-**You must open each project in Cursor at least once before importing.** Cursor creates a workspace storage directory the first time you open a project — MoveZ needs this directory to register sessions in the sidebar.
-
-### Step-by-Step
-
-1. **Close Cursor** completely (File → Exit, not just close window)
-2. **Open each project folder** you want to import sessions for in Cursor — just open it briefly, then close Cursor again. This creates the workspace storage entry.
-3. **Run the import:**
-   ```bash
-   movez import --input=backup.cbz --tool=cursor
-   ```
-   Or use the desktop app: Sessions → Import → select your `.cbz` file → choose Cursor as target.
-4. **Reopen Cursor** on any project — your imported sessions will appear in the chat history sidebar.
-
-### What Gets Written
-
-| Layer | Location | Purpose |
+| Command | What it does | Key options |
 |---|---|---|
-| 1. JSONL transcript | `~/.cursor/projects/<path>/agent-transcripts/<id>/` | Raw conversation text |
-| 2. Global SQLite | `%APPDATA%/Cursor/User/globalStorage/state.vscdb` | Session metadata + individual messages (composerData + bubbleId entries) |
-| 3. Workspace SQLite | `%APPDATA%/Cursor/User/workspaceStorage/<hash>/state.vscdb` | Sidebar registration (makes session clickable) |
+| `list-sessions` | List detected sessions | `--tool`, `--project`, `--json` |
+| `show` | Print one session with all turns | `--tool`, `--id`, `--json` |
+| `export` | Write sessions to a `.cbz` bundle (or `.json`) | `--tool` (default `auto`), `--output`, `--project`, `--encrypt` |
+| `import` | Load a bundle into a tool | `--input`, `--tool`, `--project`, `--from-path`, `--to-path` |
+| `transfer` | Export + import in one step | `--from`, `--to`, `--project`, `--from-path`, `--to-path` |
+| `package` | Turn a `.json` session list into a `.cbz` | `--input`, `--output`, `--encrypt` |
+| `unpack` | Extract a `.cbz` into one JSON file per session | `--input`, `--output` |
+| `sync:push` | Encrypt and upload sessions to your server | `--server`, `--tool`, `--project` |
+| `sync:pull` | Download, decrypt and import sessions | `--server`, `--tool`, `--project`, `--from-path`, `--to-path` |
+| `doctor` | Check requirements and detected tools | |
 
-### If Sessions Don't Appear
-
-- **Session not in sidebar?** → You didn't open the project in Cursor before importing. Open it once, close Cursor, re-run the import.
-- **Session shows but content is empty?** → Close Cursor fully and reopen. Cursor caches session state in memory.
-- **Sessions from a different machine?** → Use `--from-path` and `--to-path` to remap project paths:
-  ```bash
-  movez import --input=backup.cbz --tool=cursor \
-    --from-path="D:/Projects" \
-    --to-path="C:/Work/Projects"
-  ```
-
-### Limitations
-
-- **AI won't remember context** — Cursor uses an internal protobuf blob (`conversationState`) to feed conversation history to the model. MoveZ can't generate this format, so the AI won't "remember" imported conversations. You get full visual history of all messages, but to continue the conversation with context, start a new chat and reference the history.
-- **Workspace hash is opaque** — Cursor generates workspace directory hashes using an internal algorithm. MoveZ can only register sessions for projects that have been opened (and thus have an existing hash). There's no way to pre-create workspace directories.
+Run `movez <command> --help` for details.
 
 ---
 
-## Bundle Format (.cbz)
+## Supported tools
 
-MoveZ uses `.cbz` (Compressed Bundle Zip) files as a portable bundle format:
+| Tool | Read | Write | Storage |
+|---|:---:|:---:|---|
+| Cursor | ✅ | ✅ | `~/.cursor/projects` transcripts + `state.vscdb` |
+| Claude Code | ✅ | ✅ | `~/.claude/projects/*.jsonl` (+ Claude desktop app registry) |
+| Codex CLI | ✅ | ✅ | `~/.codex/sessions/YYYY/MM/DD/rollout-*.jsonl` |
+| Copilot CLI | ✅ | ✅ | `~/.copilot/sessions/*.json` |
+| Cline | ✅ | — | VS Code extension `tasks/<id>/api_conversation_history.json` |
+| Continue | ✅ | — | `~/.continue/sessions.db` |
+| Windsurf | — | — | Not supported yet: Cascade stores conversations in an encrypted format |
 
-```
-bundle.cbz (ZIP archive)
-└── bundle.json
-    ├── version: 1
-    ├── source_tool: "cursor"
-    ├── exported_at: "2026-03-26T..."
-    └── sessions: [
-          { id, title, project, turns: [{role, content, timestamp}...] }
-        ]
-```
+### Importing into Cursor
 
-Bundles can optionally be encrypted with AES-256-GCM.
+Cursor only shows sessions in its sidebar for workspaces it already knows about.
 
----
+1. Open each target project in Cursor once, then **quit Cursor completely**.
+2. Run `movez import --input=backup.cbz --tool=cursor --project=/path/to/project`.
+3. Reopen Cursor. The imported chats appear in the history sidebar.
 
-## Architecture
+MoveZ writes the transcript, the global `state.vscdb` entries and the workspace registration. The full conversation is visible, but Cursor's internal model context (`conversationState`) can't be recreated. To continue a conversation, start a new chat and reference the old one.
 
-```
-contextbridge/    ← Laravel Zero CLI (builds to movez.phar)
-electron-app/     ← Electron + Vue 3 desktop app
-vscode-extension/ ← VS Code extension (TypeScript)
-web/              ← Laravel 12 + Inertia.js web dashboard
-.github/          ← GitHub Actions CI/CD
-```
+### Importing into Claude Code
 
-See [AGENTS.md](AGENTS.md) for the full engineering specification.
+Sessions are written under `~/.claude/projects/<encoded-path>/`. On Windows they are also registered with the Claude desktop app, so they appear in its history. Re-importing a session updates it rather than duplicating it.
 
 ---
 
-## Building from Source
+## Sync between machines
 
-### Requirements
+1. **Run a sync server.** See [docs/sync-server-setup.md](docs/sync-server-setup.md). Then issue yourself a token:
+   ```bash
+   php artisan movez:token you@example.com
+   ```
+2. **Configure each machine.** Prefer environment variables, because command-line arguments are visible to other processes:
+   ```bash
+   export MOVEZ_SERVER_URL=https://sync.example.com
+   export MOVEZ_TOKEN=<token>          # or save it in ~/.movez/token
+   ```
+3. **Share the encryption key.** Sessions are encrypted with `~/.movez/key`, which is created on your first encrypted export or push. **Copy that file to every machine you pull on.** Without it, nothing can be decrypted, including by the server.
+4. **Push and pull:**
+   ```bash
+   movez sync:push --tool=claude-code                    # machine A
+   movez sync:pull --tool=claude-code --project=~/work/app \
+     --from-path="C:/Users/me/work" --to-path="/home/me/work"   # machine B
+   ```
 
-- PHP 8.2+ with extensions: pdo_sqlite, openssl, zip, mbstring
-- Composer 2.x
-- Node 20+
+---
 
-### Build the Desktop App
+## Desktop app (Windows)
+
+Install `MoveZ-Setup-<version>.exe` and launch **MoveZ**:
+
+| Page | What it does |
+|---|---|
+| Dashboard | Detected tools and session counts |
+| Sessions | Browse, read, export and import sessions |
+| Migrate | Tool-to-tool transfer with path remapping |
+| Sync | Push and pull through your sync server |
+| Doctor | Environment checks |
+| Settings | CLI/PHP paths and sync server |
+
+## VS Code / Cursor extension
+
+Install `movez-vscode.vsix` with **Extensions: Install from VSIX…**. It adds a Sessions view for the open project, plus Export, Import, Migration Wizard and Sync commands. The sync token is kept in your OS keychain. See [docs/extension-setup.md](docs/extension-setup.md).
+
+## Web dashboard
+
+The sync server also serves a dashboard: projects, sessions, and a migration wizard that builds the exact `movez transfer` command for you. It is meant for a private, single-user deployment; the dashboard has no login yet (see Roadmap).
+
+---
+
+## Bundle format (`.cbz`)
+
+A `.cbz` is a ZIP archive:
+
+| File | Contents |
+|---|---|
+| `bundle.json` | `{ version, source_tool, exported_at, sessions: [...] }`, AES-256-GCM encrypted when `manifest.encrypted` is true |
+| `manifest.json` | `{ version, source_tool, machine_sha, exported_at, session_count, encrypted }` |
+| `config.json` | Optional project config (rules, `CLAUDE.md`, MCP config) |
+
+Each session has `id, title, project, source_tool, created_at, last_active_at, turn_count, turns[]`. Each turn has `role, content, timestamp, files_referenced, file_diffs, reasoning_trace, tool_calls`.
+
+Encrypted data uses the layout `base64(iv[12] ‖ tag[16] ‖ ciphertext)`.
+
+---
+
+## Repository layout
+
+```
+movez/             Laravel Zero CLI → movez.phar
+web/               Laravel 12 + Inertia + Vue 3 dashboard and sync server
+electron-app/      Electron + Vue 3 Windows desktop app (bundles PHP + movez.phar)
+vscode-extension/  VS Code / Cursor extension (TypeScript)
+docs/              Sync server and extension guides
+```
+
+See [AGENTS.md](AGENTS.md) for the engineering spec and coding rules.
+
+## Building from source
+
+Requirements: PHP 8.2+ (`pdo_sqlite`, `openssl`, `zip`, `mbstring`), Composer 2, Node 20+.
 
 ```bash
-# 1. Install dependencies
-cd contextbridge && composer install && cd ..
-cd electron-app && npm install && cd ..
+# CLI
+cd movez && composer install
+php movez doctor
+php movez app:build movez.phar          # → movez/builds/movez.phar
 
-# 2. Download PHP runtime (Windows)
-# Place php.exe + DLLs in electron-app/resources/php/
+# Web
+cd web && composer install && npm ci && npm run build
+cp .env.example .env && php artisan key:generate && php artisan migrate
 
-# 3. Build PHAR
-cd contextbridge
-php -d phar.readonly=0 box.phar compile
-cp contextbridge.phar ../electron-app/resources/movez.phar
-cd ..
+# Extension
+cd vscode-extension && npm ci && npx vsce package --no-dependencies
 
-# 4. Build Electron installer
-cd electron-app
-npm run package
-# Output: electron-app/dist/MoveZ Setup 1.0.0.exe
+# Desktop app (Windows)
+build.bat   # needs movez/box.phar and PHP in electron-app/resources/php/
 ```
 
-Or use the included build script (Windows):
-```batch
-build.bat
-```
+Pushing a `v*` tag runs the release workflow, which builds and publishes the PHAR, the VSIX and the Windows installer.
 
-### Run Tests
+### Tests
 
 ```bash
-# CLI tests
-cd contextbridge && php vendor/bin/pest
-
-# Web tests
-cd web && php artisan test
-
-# TypeScript check
-cd vscode-extension && npx tsc --noEmit
+cd movez && php vendor/bin/pest            # CLI
+cd web && php artisan test                 # web
+cd web && npm run type-check               # web frontend types
+cd vscode-extension && npm test            # extension type check
+cd electron-app && npm run typecheck       # desktop app type check
 ```
 
 ---
 
 ## Security
 
-- All synced data is encrypted with AES-256-GCM before leaving your machine
-- Encryption key stored at `~/.movez/key` with 0600 permissions
-- API tokens stored as SHA-256 hashes in the database
-- No telemetry, no external calls except to your configured sync server
+- Sessions are encrypted client-side with AES-256-GCM before export or sync. The server stores only ciphertext.
+- The key lives at `~/.movez/key` (0600 on macOS/Linux) and never leaves your machines unless you copy it.
+- API tokens are stored server-side as SHA-256 hashes.
+- No telemetry. MoveZ only talks to the sync server you configure.
 
----
+## Roadmap
+
+- Windsurf support (blocked on its encrypted Cascade storage)
+- Login and per-user scoping for the web dashboard
+- Server-side migration jobs (Horizon)
+- macOS and Linux desktop builds
 
 ## License
 
-MIT — see [LICENSE](LICENSE)
+MIT, see [LICENSE](LICENSE).

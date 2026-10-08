@@ -1,41 +1,37 @@
-<p align="center">
-    <img title="Laravel Zero" height="100" src="https://raw.githubusercontent.com/laravel-zero/docs/master/images/logo/laravel-zero-readme.png" alt="Laravel Zero Logo" />
-</p>
+# MoveZ CLI
 
-<p align="center">
-  <a href="https://github.com/laravel-zero/framework/actions"><img src="https://github.com/laravel-zero/laravel-zero/actions/workflows/tests.yml/badge.svg" alt="Build Status" /></a>
-  <a href="https://packagist.org/packages/laravel-zero/framework"><img src="https://img.shields.io/packagist/dt/laravel-zero/framework.svg" alt="Total Downloads" /></a>
-  <a href="https://packagist.org/packages/laravel-zero/framework"><img src="https://img.shields.io/packagist/v/laravel-zero/framework.svg?label=stable" alt="Latest Stable Version" /></a>
-  <a href="https://packagist.org/packages/laravel-zero/framework"><img src="https://img.shields.io/packagist/l/laravel-zero/framework.svg" alt="License" /></a>
-</p>
+The `movez` command-line tool, built with [Laravel Zero](https://laravel-zero.com). It reads, writes, bundles, encrypts and syncs AI coding sessions.
 
-Laravel Zero was created by [Nuno Maduro](https://github.com/nunomaduro) and [Owen Voke](https://github.com/owenvoke), and is a micro-framework that provides an elegant starting point for your console application. It is an **unofficial** and customized version of Laravel optimized for building command-line applications.
+User documentation lives in the [main README](../README.md).
 
-- Built on top of the [Laravel](https://laravel.com) components.
-- Optional installation of Laravel [Eloquent](https://laravel-zero.com/docs/database/), Laravel [Logging](https://laravel-zero.com/docs/logging/) and many others.
-- Supports interactive [menus](https://laravel-zero.com/docs/build-interactive-menus/) and [desktop notifications](https://laravel-zero.com/docs/send-desktop-notifications/) on Linux, Windows & MacOS.
-- Ships with a [Scheduler](https://laravel-zero.com/docs/task-scheduling/) and  a [Standalone Compiler](https://laravel-zero.com/docs/build-a-standalone-application/).
-- Integration with [Collision](https://github.com/nunomaduro/collision) - Beautiful error reporting
-- Follow the creator Nuno Maduro:
-    - YouTube: **[youtube.com/@nunomaduro](https://www.youtube.com/@nunomaduro)** — Videos every weekday
-    - Twitch: **[twitch.tv/enunomaduro](https://www.twitch.tv/enunomaduro)** — Streams (almost) every weekday
-    - Twitter / X: **[x.com/enunomaduro](https://x.com/enunomaduro)**
-    - LinkedIn: **[linkedin.com/in/nunomaduro](https://www.linkedin.com/in/nunomaduro)**
-    - Instagram: **[instagram.com/enunomaduro](https://www.instagram.com/enunomaduro)**
-    - Tiktok: **[tiktok.com/@enunomaduro](https://www.tiktok.com/@enunomaduro)**
+## Development
 
-------
+```bash
+composer install
+php movez list                 # available commands
+php movez doctor
+php vendor/bin/pest            # tests
+php movez app:build movez.phar # → builds/movez.phar
+```
 
-## Documentation
+## Layout
 
-For full documentation, visit [laravel-zero.com](https://laravel-zero.com/).
+| Path | Contents |
+|---|---|
+| `app/Commands` | CLI commands (`export`, `import`, `transfer`, `show`, `sync:*`, …) |
+| `app/Parsers` | One parser per tool, all producing `SessionDTO`s |
+| `app/Writers` | One writer per writable tool |
+| `app/Services` | `Encryptor` (AES-256-GCM), `Packager` (.cbz), `SyncClient`, `PathMapper`, `ToolDetector` |
+| `app/Support` | `BundleSchema`, `PlatformPaths`, `SafePath`, `ProjectFilter`, `ContentFlattener` |
+| `config/movez.php` | Per-OS storage paths for every tool, key and token locations |
 
-## Support the development
-**Do you like this project? Support it by donating**
+## Environment variables
 
-- PayPal: [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=66BYDWAT92N6L)
-- Patreon: [Donate](https://www.patreon.com/nunomaduro)
+| Variable | Purpose |
+|---|---|
+| `MOVEZ_KEY_PATH` | Encryption key location (default `~/.movez/key`) |
+| `MOVEZ_TOKEN_PATH` | Sync token file (default `~/.movez/token`) |
+| `MOVEZ_TOKEN` | Sync token (preferred over `--token`) |
+| `MOVEZ_SERVER_URL` | Default sync server |
 
-## License
-
-Laravel Zero is an open-source software licensed under the MIT license.
+Rules for contributors (strict types, readonly DTOs, Pest-only tests, no Eloquent) are in [AGENTS.md](../AGENTS.md).

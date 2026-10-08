@@ -2,30 +2,35 @@
 
 Self-host the MoveZ sync server for encrypted cross-machine session storage.
 
+The server stores **only ciphertext**. The CLI encrypts sessions with AES-256-GCM using `~/.movez/key` before uploading, so the server can't read your sessions, and neither can anyone who compromises it.
+
 ---
 
 ## Requirements
 
-- PHP 8.3+ with extensions: `pdo_mysql`, `openssl`, `redis`, `pcntl`
-- MySQL 8.0+
-- Redis 7+
+- PHP 8.2+ with `pdo_mysql` (or `pdo_sqlite`), `openssl`, `mbstring`
+- MySQL 8.0+, or SQLite for a single-user setup
 - Composer 2.x
-- Node 20+ (for building frontend assets)
+- Node 20+ (to build the dashboard assets)
+- Optional: Redis 7+ and `pcntl`/`posix` (Linux/macOS) if you run Laravel Horizon. Sync itself doesn't use queues.
+
+> **Windows:** `laravel/horizon` requires `ext-pcntl`/`ext-posix`, which don't exist on Windows. Install with
+> `composer install --ignore-platform-req=ext-pcntl --ignore-platform-req=ext-posix` and don't run Horizon.
 
 ---
 
 ## Installation
 
-### 1. Clone and Install Dependencies
+### 1. Clone and install
 
 ```bash
-git clone https://github.com/your-org/movez.git
-cd movez/web
+git clone https://github.com/kv4u/MoveZ.git
+cd MoveZ/web
 composer install --no-dev --optimize-autoloader
-npm install && npm run build
+npm ci && npm run build
 ```
 
-### 2. Configure Environment
+### 2. Configure
 
 ```bash
 cp .env.example .env
@@ -36,7 +41,8 @@ Edit `.env`:
 
 ```ini
 APP_ENV=production
-APP_URL=https://your-server.com
+APP_DEBUG=false
+APP_URL=https://sync.example.com
 
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -44,14 +50,11 @@ DB_PORT=3306
 DB_DATABASE=movez
 DB_USERNAME=movez
 DB_PASSWORD=your_secure_password
-
-REDIS_HOST=127.0.0.1
-REDIS_PORT=6379
-
-QUEUE_CONNECTION=redis
 ```
 
-### 3. Database Setup
+For a single-user server you can keep `DB_CONNECTION=sqlite` and run `touch database/database.sqlite`.
+
+### 3. Create the database
 
 ```bash
 mysql -u root -p -e "CREATE DATABASE movez CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
@@ -61,45 +64,23 @@ mysql -u root -p -e "GRANT ALL PRIVILEGES ON movez.* TO 'movez'@'localhost';"
 php artisan migrate --force
 ```
 
-### 4. Create API User
-
-```php
-php artisan tinker
->>> $user = App\Models\User::create(['name' => 'Me', 'email' => 'me@example.com', 'password' => bcrypt('secret')]);
->>> $token = Illuminate\Support\Str::random(40);
->>> $user->update(['api_token' => hash('sha256', $token)]);
->>> echo "Your token: $token";
-```
-
-Save the raw token — this is what you pass to `movez sync:push --token=...`.
-
-### 5. Start Laravel Horizon (Queue Worker)
+### 4. Create a user and an API token
 
 ```bash
-php artisan horizon
+php artisan tinker --execute="App\Models\User::create(['name' => 'Me', 'email' => 'me@example.com', 'password' => 'change-me']);"
+php artisan movez:token me@example.com
 ```
 
-For production, use Supervisor:
+`movez:token` prints the token **once**. Only its SHA-256 hash is stored. Running it again replaces the old token.
 
-```ini
-[program:movez-horizon]
-command=php /path/to/web/artisan horizon
-directory=/path/to/web
-user=www-data
-autostart=true
-autorestart=true
-redirect_stderr=true
-stdout_logfile=/var/log/movez-horizon.log
-```
-
-### 6. Web Server (Nginx)
+### 5. Web server (Nginx)
 
 ```nginx
 server {
     listen 443 ssl;
-    server_name your-server.com;
+    server_name sync.example.com;
 
-    root /path/to/web/public;
+    root /path/to/MoveZ/web/public;
     index index.php;
 
     ssl_certificate     /etc/ssl/certs/your-cert.pem;
@@ -117,53 +98,72 @@ server {
 }
 ```
 
+> The web dashboard has **no login yet**. Restrict it (VPN, IP allow-list or HTTP basic auth on everything except `/api/*`) until authentication lands. The `/api/sync/*` endpoints are protected by API tokens.
+
 ---
 
-## API Reference
+## Using it from the CLI
 
-### Authentication
+On every machine:
 
-All API endpoints require a Bearer token:
+```bash
+export MOVEZ_SERVER_URL=https://sync.example.com
+export MOVEZ_TOKEN=<token from movez:token>   # or save it in ~/.movez/token
+```
+
+Copy `~/.movez/key` from the first machine to the others. **Without the same key, pulled sessions can't be decrypted.**
+
+```bash
+movez sync:push --tool=claude-code                  # upload (replaces the previous upload)
+movez sync:pull --tool=claude-code --project=.      # download, decrypt, import
+```
+
+---
+
+## API reference
+
+All endpoints need a Bearer token. The server hashes it with SHA-256 and matches `users.api_token`.
 
 ```
-Authorization: Bearer YOUR_RAW_TOKEN
+Authorization: Bearer <token>
 ```
 
-The server hashes the token with SHA-256 and looks up `users.api_token`.
+### Push
 
-### Endpoints
-
-#### Push Sessions
 ```
 POST /api/sync/push
 Content-Type: application/json
-Authorization: Bearer TOKEN
 
-{ "sessions": "<AES-256-GCM encrypted JSON string>" }
+{ "sessions": "<base64 AES-256-GCM ciphertext>", "count": 12 }
 ```
 
 Response:
+
 ```json
-{ "status": "ok", "count": 5 }
+{ "status": "ok", "count": 12 }
 ```
 
-#### Pull Sessions
+Each push replaces the user's previous payload.
+
+### Pull
+
 ```
 GET /api/sync/pull
-Authorization: Bearer TOKEN
 ```
 
-Response:
+Response (`sessions` is `null` until the first push):
+
 ```json
-{ "sessions": "<AES-256-GCM encrypted JSON string>" }
+{ "sessions": "<base64 AES-256-GCM ciphertext>", "count": 12 }
 ```
+
+Errors: `401` for a missing or invalid token, `422` for a missing `sessions` field.
 
 ---
 
-## Security Notes
+## Security notes
 
-- All session data is AES-256-GCM encrypted **before** leaving the client machine
-- The server never has access to plaintext session data
-- API tokens are stored as SHA-256 hashes — the raw token is never stored
-- Use HTTPS in production — the server should not be accessible over HTTP
-- Firewall the Redis port (6379) — it should not be publicly accessible
+- Session content is encrypted on the client. The server never sees plaintext or the key.
+- API tokens are stored as SHA-256 hashes, and `api_token` is never serialized.
+- Serve over HTTPS only.
+- If you use Redis, keep it firewalled.

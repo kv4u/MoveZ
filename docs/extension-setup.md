@@ -1,122 +1,78 @@
-# VS Code Extension Setup
+# VS Code / Cursor Extension Setup
 
-Install and configure the MoveZ VS Code/Cursor extension.
+The MoveZ extension is a front end for the `movez` CLI. It lists, exports, imports, transfers and syncs sessions from inside the editor.
 
 ---
 
-## Installation
+## 1. Install the CLI
 
-### From VS Code Marketplace
-
-Search "MoveZ" in the Extensions panel and click Install.
-
-### From VSIX (GitHub Releases)
+Download `movez.phar` from the [latest release](https://github.com/kv4u/MoveZ/releases/latest) (needs PHP 8.2+), or use the PHP and PHAR bundled with the Windows desktop app.
 
 ```bash
-code --install-extension movez-*.vsix
+php movez.phar doctor
 ```
 
-Or in VS Code: `Ctrl+Shift+P` → "Extensions: Install from VSIX..."
+## 2. Install the extension
 
----
+Download `movez-vscode.vsix` from the [latest release](https://github.com/kv4u/MoveZ/releases/latest), then either:
 
-## Configuration
+```bash
+code --install-extension movez-vscode.vsix      # or: cursor --install-extension ...
+```
 
-Open VS Code Settings (`Ctrl+,`) and search "movez":
+or run **Extensions: Install from VSIX…** from the Command Palette.
+
+## 3. Configure
+
+Open Settings (`Ctrl+,`) and search for "movez":
 
 | Setting | Default | Description |
 |---|---|---|
-| `movez.cliPath` | `movez` | Path to the movez CLI binary |
-| `movez.serverUrl` | `""` | URL of your sync server (e.g., `https://sync.example.com`) |
-| `movez.token` | `""` | Your API token for the sync server |
+| `movez.cliPath` | `movez` | `movez` executable on your PATH, or the full path to `movez.phar` |
+| `movez.phpPath` | `php` | PHP used to run a `.phar` |
+| `movez.serverUrl` | | Your sync server, e.g. `https://sync.example.com` |
 
-### Example `settings.json`
+Example using the Windows desktop app's bundled runtime:
 
 ```json
 {
-  "movez.cliPath": "/usr/local/bin/movez",
-  "movez.serverUrl": "https://sync.example.com",
-  "movez.token": "your_raw_api_token_here"
+  "movez.cliPath": "C:\\Program Files\\MoveZ\\resources\\movez.phar",
+  "movez.phpPath": "C:\\Program Files\\MoveZ\\resources\\php\\php.exe",
+  "movez.serverUrl": "https://sync.example.com"
 }
 ```
 
+For sync, run **MoveZ: Set Sync Token**. The token is stored in your OS keychain through VS Code SecretStorage, not in `settings.json`. It is passed to the CLI as the `MOVEZ_TOKEN` environment variable.
+
 ---
 
-## Features
+## Usage
 
-### Session Tree View
+### Sessions view
 
-The **MoveZ Sessions** panel in the Activity Bar shows all AI sessions detected on your machine. It shells out to:
+Click the MoveZ icon in the activity bar. The view lists sessions belonging to the **open folder**, newest first, with tool and turn count. Use the refresh button after working in another tool. If the CLI can't be found or fails, the view says so. Details are in the **MoveZ** output channel (View → Output → MoveZ).
 
-```bash
-movez list-sessions --json
-```
+### Commands (`Ctrl+Shift+P`)
 
-Expand each tool node to see individual sessions.
-
-### Commands
-
-Access via `Ctrl+Shift+P`:
-
-| Command | Description |
+| Command | What it does |
 |---|---|
-| MoveZ: Export Session | Export sessions from a tool to a .cbz bundle |
-| MoveZ: Import Session | Import a .cbz bundle into a tool |
-| MoveZ: Open Migration Wizard | Open the web-based 5-step migration wizard |
-| MoveZ: Sync Push | Push encrypted sessions to sync server |
-| MoveZ: Sync Pull | Pull sessions from sync server |
-| MoveZ: Refresh Sessions | Refresh the session tree view |
+| **MoveZ: Export Sessions** | Pick a tool, choose where to save a `.cbz` bundle, optionally encrypt it. Only this project's sessions are exported. |
+| **MoveZ: Import Sessions** | Pick a `.cbz` or `.json` bundle and a target tool (Cursor, Claude Code, Codex, Copilot CLI). Encrypted bundles are detected automatically. |
+| **MoveZ: Migration Wizard** | Opens a form: source tool, target tool, project folder, optional path remap. Runs `movez transfer` locally. |
+| **MoveZ: Sync Push** | Encrypts and uploads this project's sessions to your sync server. |
+| **MoveZ: Sync Pull** | Downloads, decrypts and imports sessions into the chosen tool. |
+| **MoveZ: Set Sync Token** | Saves (or clears, if left empty) the sync API token. |
+| **MoveZ: Refresh Sessions** | Reloads the Sessions view. |
 
-### Migration Wizard
-
-The migration wizard opens a WebView panel. If `movez.serverUrl` is configured, it loads the wizard from your server. Otherwise it shows an embedded wizard.
-
-Steps:
-1. **Source Tool** — select where sessions are coming from
-2. **Target Tool** — select where to import sessions
-3. **Project** — optionally select a specific project
-4. **Paths** — configure from/to path remapping for cross-machine migration
-5. **Confirm** — review and execute
+Sync needs the same `~/.movez/key` on every machine. See [sync-server-setup.md](sync-server-setup.md).
 
 ---
 
-## Development
-
-### Build from Source
+## Building from source
 
 ```bash
 cd vscode-extension
-npm install
-npx tsc --noEmit   # type check
-npm run compile    # build
-npx vsce package   # produce .vsix
+npm ci
+npm test                                  # type check
+npx vsce package --no-dependencies        # → movez-<version>.vsix
 ```
-
-### Run Tests
-
-```bash
-npm test
-```
-
-### Debug in VS Code
-
-1. Open `vscode-extension/` in VS Code
-2. Press `F5` to launch Extension Development Host
-3. The extension will be loaded in the new window
-
----
-
-## Troubleshooting
-
-**"movez: command not found"**
-- Set `movez.cliPath` to the full path of your CLI binary
-- Run `movez doctor` to verify the CLI is working
-
-**Sessions panel is empty**
-- Ensure the CLI is installed and working: `movez doctor`
-- Check that AI tools have session data in their default storage paths
-- Click the Refresh button in the Sessions panel
-
-**Sync push/pull fails with 401**
-- Verify `movez.token` matches the raw token you created on the server
-- Verify `movez.serverUrl` is correct and the server is reachable
