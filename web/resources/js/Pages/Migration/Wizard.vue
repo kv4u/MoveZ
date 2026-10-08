@@ -63,7 +63,7 @@
         <p class="text-sm text-gray-500 mb-4">Which AI tool are you migrating sessions into?</p>
         <div class="grid grid-cols-2 gap-3">
           <button
-            v-for="tool in writableTools"
+            v-for="tool in targetTools"
             :key="tool"
             @click="form.toTool = tool"
             :class="[
@@ -150,8 +150,18 @@
           </div>
         </div>
 
-        <div v-if="migrationResult" class="mt-4 rounded-lg bg-green-50 border border-green-200 p-4 text-sm text-green-800">
-          ✅ {{ migrationResult }}
+        <div v-if="migrationResult" class="mt-4 rounded-lg bg-green-50 border border-green-200 p-4 text-sm text-green-800" data-testid="migration-result">
+          <p>✅ {{ migrationResult.message }}</p>
+          <div class="mt-3 flex items-start gap-2">
+            <pre class="flex-1 overflow-x-auto rounded-md bg-gray-900 px-3 py-2 font-mono text-xs text-gray-100" data-testid="migration-command">{{ migrationResult.command }}</pre>
+            <button
+              type="button"
+              @click="copyCommand"
+              class="rounded-md border border-green-300 bg-white px-3 py-2 text-xs font-medium text-green-800 hover:bg-green-100"
+            >
+              {{ copied ? 'Copied' : 'Copy' }}
+            </button>
+          </div>
         </div>
 
         <div v-if="migrationError" class="mt-4 rounded-lg bg-red-50 border border-red-200 p-4 text-sm text-red-800">
@@ -166,7 +176,7 @@
             class="rounded-lg bg-green-600 px-6 py-2 text-sm font-medium text-white disabled:opacity-40 hover:bg-green-700 transition-colors"
             data-testid="confirm-button"
           >
-            {{ isSubmitting ? 'Migrating...' : '✓ Start Migration' }}
+            {{ isSubmitting ? 'Preparing...' : '✓ Get Migration Command' }}
           </button>
         </div>
       </div>
@@ -175,21 +185,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { computed, ref, reactive } from 'vue';
 import ToolBadge from '@/Components/ToolBadge.vue';
 import type { Project } from '@/types';
 
 const props = defineProps<{
   supportedTools: string[];
-  projects: Pick<Project, 'id' | 'name'>[];
+  writableTools: string[];
+  projects: Pick<Project, 'id' | 'name' | 'path'>[];
 }>();
 
-const writableTools = ['cursor', 'windsurf', 'claude-code', 'codex', 'copilot-cli'];
+interface MigrationResult {
+  message: string;
+  command: string;
+}
+
 const stepLabels   = ['Source', 'Target', 'Project', 'Paths', 'Confirm'];
 const currentStep  = ref(1);
 const isSubmitting = ref(false);
-const migrationResult = ref<string | null>(null);
+const copied       = ref(false);
+const migrationResult = ref<MigrationResult | null>(null);
 const migrationError  = ref<string | null>(null);
 
 const form = reactive({
@@ -200,13 +215,16 @@ const form = reactive({
   toPath:    '',
 });
 
+// A tool can't be both source and target
+const targetTools = computed(() => props.writableTools.filter((t) => t !== form.fromTool));
+
 async function submit(): Promise<void> {
   isSubmitting.value = true;
   migrationError.value  = null;
   migrationResult.value = null;
 
   try {
-    await fetch('/migration/start', {
+    const res = await fetch('/migration/start', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -222,11 +240,25 @@ async function submit(): Promise<void> {
       }),
     });
 
-    migrationResult.value = `Migration queued from ${form.fromTool} → ${form.toTool}. Sessions will appear shortly.`;
+    const body = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      const firstError = body.errors ? Object.values(body.errors as Record<string, string[]>)[0]?.[0] : null;
+      throw new Error(firstError ?? body.message ?? `Request failed (HTTP ${res.status})`);
+    }
+
+    migrationResult.value = { message: body.message, command: body.command };
   } catch (err) {
-    migrationError.value = String(err);
+    migrationError.value = err instanceof Error ? err.message : String(err);
   } finally {
     isSubmitting.value = false;
   }
+}
+
+async function copyCommand(): Promise<void> {
+  if (!migrationResult.value) return;
+  await navigator.clipboard.writeText(migrationResult.value.command);
+  copied.value = true;
+  setTimeout(() => (copied.value = false), 2000);
 }
 </script>

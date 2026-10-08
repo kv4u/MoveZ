@@ -6,22 +6,23 @@ test.describe('Dashboard', () => {
 
     await expect(page).toHaveTitle(/MoveZ/);
     await expect(page.locator('h1')).toContainText('MoveZ');
-    await expect(page.locator('text=Migration Wizard')).toBeVisible();
-    await expect(page.locator('text=Projects')).toBeVisible();
+    const nav = page.locator('header nav');
+    await expect(nav.getByRole('link', { name: 'Migration Wizard' })).toBeVisible();
+    await expect(nav.getByRole('link', { name: 'Projects', exact: true })).toBeVisible();
   });
 
   test('shows stats cards with labels', async ({ page }) => {
     await page.goto('/');
 
-    await expect(page.locator('text=Total Sessions')).toBeVisible();
-    await expect(page.locator('text=Total Projects')).toBeVisible();
-    await expect(page.locator('text=Sync Status')).toBeVisible();
+    await expect(page.getByText('Total Sessions', { exact: true })).toBeVisible();
+    await expect(page.getByText('Total Projects', { exact: true })).toBeVisible();
+    await expect(page.getByText('Sync Status', { exact: true })).toBeVisible();
   });
 
   test('quick action cards are clickable', async ({ page }) => {
     await page.goto('/');
 
-    await page.locator('text=Browse Projects').click();
+    await page.getByText('Browse Projects', { exact: true }).click();
     await expect(page).toHaveURL(/\/projects/);
   });
 });
