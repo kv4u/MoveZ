@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import LogStream from '@/components/LogStream.vue'
 import ToolBadge from '@/components/ToolBadge.vue'
 
-const TOOLS = ['cursor', 'windsurf', 'claude-code', 'codex', 'copilot-cli', 'cline', 'continue']
+import { READABLE_TOOLS as TOOLS, WRITABLE_TOOLS } from '@/tools'
 
 // Wizard state
 const step = ref(1)
@@ -111,7 +111,7 @@ function reset() {
       <h2 class="text-sm font-semibold text-slate-300 mb-4">Select target tool</h2>
       <div class="grid grid-cols-2 gap-2">
         <button
-          v-for="tool in TOOLS"
+          v-for="tool in WRITABLE_TOOLS.filter(t => t !== fromTool)"
           :key="tool"
           class="p-3 rounded-xl border text-left transition-all"
           :class="toTool === tool

@@ -4,7 +4,7 @@ import { useSettingsStore } from '@/stores/settings'
 import LogStream from '@/components/LogStream.vue'
 import ToolBadge from '@/components/ToolBadge.vue'
 
-const TOOLS = ['cursor', 'windsurf', 'claude-code', 'codex', 'copilot-cli', 'cline', 'continue']
+import { READABLE_TOOLS, WRITABLE_TOOLS } from '@/tools'
 
 const settingsStore = useSettingsStore()
 onMounted(() => settingsStore.load())
@@ -93,7 +93,7 @@ async function run() {
         </label>
         <div class="grid grid-cols-2 gap-2">
           <button
-            v-for="t in TOOLS"
+            v-for="t in (mode === 'push' ? READABLE_TOOLS : WRITABLE_TOOLS)"
             :key="t"
             class="p-2 rounded-lg border text-left transition-all"
             :class="tool === t

@@ -18,6 +18,8 @@ export interface TurnDTO {
 export interface SessionDTO {
   id: string;
   title: string;
+  project?: string;
+  turn_count?: number;
   source_tool: string;
   source_machine_id: string;
   created_at: string;
@@ -27,12 +29,14 @@ export interface SessionDTO {
 
 export interface AiSession {
   id: number;
-  project_id: number;
+  project_id: number | null;
   source_tool: string;
   session_id: string;
   title: string;
   exported_at: string | null;
   created_at: string;
+  updated_at: string;
+  project?: Project | null;
 }
 
 export interface Project {

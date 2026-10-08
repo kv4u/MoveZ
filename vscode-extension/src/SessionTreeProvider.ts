@@ -1,69 +1,69 @@
 import * as vscode from 'vscode';
-import { execFile } from 'child_process';
-import { promisify } from 'util';
+import { runCli, workspaceFolder } from './cli';
 import type { SessionDTO } from './types';
 
-const execFileAsync = promisify(execFile);
-
 export class SessionTreeItem extends vscode.TreeItem {
-  constructor(
-    public readonly session: SessionDTO,
-    collapsibleState: vscode.TreeItemCollapsibleState,
-  ) {
-    super(session.title || session.id, collapsibleState);
+  constructor(public readonly session: SessionDTO) {
+    super(session.title || session.id, vscode.TreeItemCollapsibleState.None);
 
-    this.description = `${session.source_tool} · ${session.turns.length} turn(s)`;
+    const turns = session.turn_count ?? session.turns?.length ?? 0;
+
+    this.description = `${session.source_tool} · ${turns} turn(s)`;
     this.tooltip = new vscode.MarkdownString(
       `**${session.title}**\n\n` +
       `Tool: ${session.source_tool}\n\n` +
+      (session.project ? `Project: ${session.project}\n\n` : '') +
       `Last active: ${new Date(session.last_active_at).toLocaleString()}\n\n` +
-      `Turns: ${session.turns.length}`,
+      `Turns: ${turns}`,
     );
     this.contextValue = 'movezSession';
     this.iconPath = new vscode.ThemeIcon('comment-discussion');
   }
 }
 
-export class SessionTreeProvider implements vscode.TreeDataProvider<SessionTreeItem> {
-  private _onDidChangeTreeData: vscode.EventEmitter<SessionTreeItem | undefined | null | void> =
-    new vscode.EventEmitter<SessionTreeItem | undefined | null | void>();
-  readonly onDidChangeTreeData: vscode.Event<SessionTreeItem | undefined | null | void> =
-    this._onDidChangeTreeData.event;
+class MessageItem extends vscode.TreeItem {
+  constructor(message: string, icon: string) {
+    super(message, vscode.TreeItemCollapsibleState.None);
+    this.iconPath = new vscode.ThemeIcon(icon);
+  }
+}
 
-  private sessions: SessionDTO[] = [];
-
-  constructor(private readonly cliPath: string) {}
+export class SessionTreeProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
+  private readonly _onDidChangeTreeData = new vscode.EventEmitter<vscode.TreeItem | undefined | void>();
+  readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
   refresh(): void {
     this._onDidChangeTreeData.fire();
   }
 
-  getTreeItem(element: SessionTreeItem): vscode.TreeItem {
+  getTreeItem(element: vscode.TreeItem): vscode.TreeItem {
     return element;
   }
 
-  async getChildren(_element?: SessionTreeItem): Promise<SessionTreeItem[]> {
-    if (_element) {
+  async getChildren(element?: vscode.TreeItem): Promise<vscode.TreeItem[]> {
+    if (element) {
       return [];
     }
 
-    await this.loadSessions();
+    // Show sessions for the open project; all sessions when no folder is open
+    const project = workspaceFolder();
+    const args    = ['list-sessions', '--json', ...(project ? [`--project=${project}`] : [])];
 
-    return this.sessions.map(
-      (s) => new SessionTreeItem(s, vscode.TreeItemCollapsibleState.None),
-    );
-  }
-
-  private async loadSessions(): Promise<void> {
     try {
-      const { stdout } = await execFileAsync(this.cliPath, ['list-sessions', '--json'], {
-        timeout: 10_000,
-      });
+      const { stdout } = await runCli(args, { timeoutMs: 30_000 });
+      const data       = JSON.parse(stdout.trim() || '[]');
+      const sessions   = Array.isArray(data) ? (data as SessionDTO[]) : [];
 
-      const data = JSON.parse(stdout.trim());
-      this.sessions = Array.isArray(data) ? data : [];
-    } catch {
-      this.sessions = [];
+      if (sessions.length === 0) {
+        return [new MessageItem(project ? 'No sessions for this project' : 'No sessions found', 'info')];
+      }
+
+      return sessions
+        .sort((a, b) => b.last_active_at.localeCompare(a.last_active_at))
+        .map((s) => new SessionTreeItem(s));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return [new MessageItem(`MoveZ CLI error: ${message.split('\n')[0]}`, 'warning')];
     }
   }
 }

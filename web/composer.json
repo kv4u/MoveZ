@@ -1,9 +1,9 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "movez/web",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "MoveZ web dashboard and self-hosted encrypted sync server.",
+    "keywords": ["movez", "ai", "sync", "laravel"],
     "license": "MIT",
     "require": {
         "php": "^8.2",

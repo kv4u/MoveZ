@@ -81,7 +81,7 @@ movez/         ← Laravel Zero CLI
 │   ├── Support/       BundleSchema, PlatformPaths
 │   └── Commands/      ExportCommand, ImportCommand, TransferCommand, PackageCommand,
 │                      UnpackCommand, Sync/SyncPushCommand, Sync/SyncPullCommand,
-│                      ListCommand, DoctorCommand
+│                      ListCommand, ShowCommand, DoctorCommand
 ├── config/movez.php
 └── tests/             Unit/ + Feature/ (Pest PHP 3)
 
@@ -98,6 +98,10 @@ web/                   ← Laravel 12 Dashboard + Sync Server
 │   └── Components/        ToolBadge.vue, SyncStatus.vue, DiffViewer.vue,
 │                          TurnBlock.vue, SessionCard.vue
 └── e2e/                   Playwright tests
+
+electron-app/          ← Electron + Vue 3 Windows desktop app (bundles PHP + movez.phar)
+├── electron/          main.ts, preload.ts, cli.ts, ipc/*.ts
+└── src/               pages/, components/, stores/
 
 vscode-extension/      ← TypeScript VS Code extension
 ├── src/               extension.ts, SessionTreeProvider.ts, MigrationPanel.ts
@@ -143,8 +147,8 @@ Key stored at `~/.movez/key` with chmod 0600.
 ## 6. Bundle Format (.cbz)
 
 ZIP archive containing:
-- `bundle.json` — array of SessionDTO serialized via `toArray()`
-- `manifest.json` — `{ version, source_tool, machine_sha, exported_at, session_count }`
+- `bundle.json` — `{ version, source_tool, exported_at, sessions: SessionDTO::toArray()[] }` (encrypted string when `manifest.encrypted`)
+- `manifest.json` — `{ version, source_tool, machine_sha, exported_at, session_count, encrypted }`
 - `config.json` (optional) — ProjectConfigDTO
 
 Required keys validated by `BundleSchema::validate()`: `version`, `sessions`, `source_tool`, `exported_at`
@@ -155,24 +159,27 @@ Required keys validated by `BundleSchema::validate()`: `version`, `sessions`, `s
 
 | Tool | Format | Storage |
 |---|---|---|
-| cursor | SQLite state.vscdb | workspaceStorage/ |
-| windsurf | SQLite state.vscdb | workspaceStorage/ |
+| cursor | JSONL transcripts + SQLite state.vscdb | ~/.cursor/projects/ + globalStorage/workspaceStorage |
+| windsurf | Encrypted protobuf (Cascade) | not supported — parser/writer throw |
 | claude-code | JSONL | ~/.claude/projects/ |
-| codex | JSONL | ~/.codex/sessions/ |
+| codex | JSONL rollout (session_meta/response_item) | ~/.codex/sessions/YYYY/MM/DD/ |
 | copilot-cli | JSON | ~/.copilot/sessions/ |
-| cline | JSON (glob) | ~/.vscode/extensions/saoudrizwan.claude-dev-*/ |
-| continue | SQLite sessions.db | ~/.continue/ |
+| cline | JSON per task (read-only) | ~/.vscode/extensions/saoudrizwan.claude-dev-*/data/tasks/<id>/ |
+| continue | SQLite sessions.db (read-only) | ~/.continue/ |
 
 ---
 
 ## 8. API Routes (Sync Server)
 
 ```
-POST /api/sync/push    — Bearer token, body: { sessions: encrypted_json }
-GET  /api/sync/pull    — Bearer token, returns: { sessions: encrypted_json }
+POST /api/sync/push    — Bearer token, body: { sessions: encrypted_json, count?: int }
+GET  /api/sync/pull    — Bearer token, returns: { sessions: encrypted_json|null, count: int }
 ```
 
 Auth: `ApiTokenMiddleware` — Bearer token → `hash('sha256', $token)` → match `users.api_token`
+
+Payloads are stored in `sync_blobs` (one per user). Issue tokens with `php artisan movez:token <email>`.
+CLI clients read `MOVEZ_TOKEN` / `MOVEZ_SERVER_URL` so tokens never appear in process lists.
 
 ---
 
@@ -184,5 +191,6 @@ Auth: `ApiTokenMiddleware` — Bearer token → `hash('sha256', $token)` → mat
 - `movez.syncPush`
 - `movez.syncPull`
 - `movez.refreshSessions`
+- `movez.setToken` (stores the sync token in SecretStorage)
 
-Settings: `movez.cliPath`, `movez.serverUrl`, `movez.token`
+Settings: `movez.cliPath`, `movez.phpPath`, `movez.serverUrl` (`movez.token` is deprecated)

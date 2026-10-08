@@ -4,11 +4,26 @@
   "description": "Transfer and migrate AI coding sessions between tools and machines",
   "version": "0.1.0",
   "publisher": "movez",
+  "license": "MIT",
+  "icon": "resources/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kv4u/MoveZ.git",
+    "directory": "vscode-extension"
+  },
+  "bugs": {
+    "url": "https://github.com/kv4u/MoveZ/issues"
+  },
+  "homepage": "https://github.com/kv4u/MoveZ#readme",
   "engines": {
     "vscode": "^1.85.0"
   },
-  "categories": ["Other"],
-  "activationEvents": ["onStartupFinished"],
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "viewsContainers": {
@@ -56,6 +71,11 @@
         "category": "MoveZ"
       },
       {
+        "command": "movez.setToken",
+        "title": "Set Sync Token",
+        "category": "MoveZ"
+      },
+      {
         "command": "movez.refreshSessions",
         "title": "Refresh Sessions",
         "category": "MoveZ",
@@ -77,7 +97,12 @@
         "movez.cliPath": {
           "type": "string",
           "default": "movez",
-          "description": "Path to the movez CLI executable or PHAR file"
+          "description": "Path to the movez CLI executable, or to movez.phar (run through movez.phpPath)"
+        },
+        "movez.phpPath": {
+          "type": "string",
+          "default": "php",
+          "description": "PHP executable used when movez.cliPath points to a .phar file"
         },
         "movez.serverUrl": {
           "type": "string",
@@ -87,7 +112,8 @@
         "movez.token": {
           "type": "string",
           "default": "",
-          "description": "API token for the sync server"
+          "deprecationMessage": "Use the \"MoveZ: Set Sync Token\" command instead — it stores the token in your OS keychain.",
+          "description": "Deprecated: plain-text sync API token. Prefer \"MoveZ: Set Sync Token\"."
         }
       }
     }
@@ -95,15 +121,13 @@
   "scripts": {
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile",
-    "test": "node ./out/__tests__/runTests.js",
+    "test": "tsc --noEmit -p ./",
     "vscode:prepublish": "npm run compile",
     "package": "vsce package --no-dependencies"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "@types/vscode": "^1.85.0",
-    "@vscode/test-electron": "^2.3.8",
     "@vscode/vsce": "^2.22.0",
     "typescript": "^5.3.0"
   }

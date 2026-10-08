@@ -24,6 +24,7 @@ export interface SessionDetail extends SessionSummary {
 
 export interface Settings {
   cliPath: string
+  phpPath: string
   serverUrl: string
   token: string
   darkMode: boolean
@@ -35,7 +36,8 @@ export interface TransferResult {
 }
 
 export interface Bridge {
-  listSessions:      (tool?: string) => Promise<SessionSummary[]>
+  listSessions:      (tool?: string) => Promise<SessionDetail[]>
+  getSession:        (tool: string, id: string) => Promise<SessionDetail>
   exportSessions:    (opts: ExportOpts) => Promise<{ success: boolean; output: string }>
   importSessions:    (opts: ImportOpts) => Promise<{ success: boolean; output: string }>
   transfer:          (opts: TransferOpts) => Promise<TransferResult>

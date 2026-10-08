@@ -7,7 +7,6 @@ use App\Models\AiSession;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,7 +15,9 @@ class DatabaseSeeder extends Seeder
         $users = User::factory(2)->create();
 
         foreach ($users as $user) {
-            $user->update(['api_token' => hash('sha256', Str::random(40))]);
+            // Only the hash is stored, so print the plaintext once for local testing
+            $token = $user->issueApiToken();
+            $this->command?->info("API token for {$user->email}: {$token}");
 
             $projects = Project::factory(3)->create(['user_id' => $user->id]);
 

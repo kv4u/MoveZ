@@ -18,10 +18,13 @@ export interface TurnDTO {
 export interface SessionDTO {
   id: string;
   title: string;
+  project: string;
   source_tool: string;
   source_machine_id: string;
   created_at: string;   // ISO 8601
   last_active_at: string;
+  /** Present even when `turns` is empty (list-sessions only loads metadata). */
+  turn_count: number;
   turns: TurnDTO[];
 }
 

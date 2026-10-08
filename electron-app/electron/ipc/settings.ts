@@ -19,16 +19,39 @@ const store = new Store<Settings>({
   }
 })
 
+// The renderer may only change known keys, with the right types. cliPath and
+// phpPath are executed by the main process, so they must be plain strings.
+const VALIDATORS: { [K in keyof Settings]: (v: unknown) => v is Settings[K] } = {
+  cliPath:   (v): v is string => typeof v === 'string' && v.length < 1024 && !/[\r\n]/.test(v),
+  phpPath:   (v): v is string => typeof v === 'string' && v.length < 1024 && !/[\r\n]/.test(v),
+  serverUrl: (v): v is string => typeof v === 'string' && (v === '' || /^https?:\/\/[^\s]+$/i.test(v)),
+  token:     (v): v is string => typeof v === 'string' && v.length < 512,
+  darkMode:  (v): v is boolean => typeof v === 'boolean'
+}
+
+function applySetting(key: string, value: unknown): void {
+  if (!Object.prototype.hasOwnProperty.call(VALIDATORS, key)) {
+    throw new Error(`Unknown setting: ${key}`)
+  }
+
+  const k = key as keyof Settings
+  if (!VALIDATORS[k](value)) {
+    throw new Error(`Invalid value for setting ${key}`)
+  }
+
+  store.set(k, value as Settings[typeof k])
+}
+
 export function registerSettingsHandlers(): void {
   ipcMain.handle('settings:get', () => store.store)
 
-  ipcMain.handle('settings:set', (_event, key: keyof Settings, value: unknown) => {
-    store.set(key, value)
+  ipcMain.handle('settings:set', (_event, key: string, value: unknown) => {
+    applySetting(key, value)
     return store.store
   })
 
-  ipcMain.handle('settings:setAll', (_event, settings: Partial<Settings>) => {
-    Object.entries(settings).forEach(([k, v]) => store.set(k as keyof Settings, v))
+  ipcMain.handle('settings:setAll', (_event, settings: Record<string, unknown>) => {
+    Object.entries(settings ?? {}).forEach(([k, v]) => applySetting(k, v))
     return store.store
   })
 }
