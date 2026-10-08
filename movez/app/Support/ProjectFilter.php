@@ -24,7 +24,9 @@ final class ProjectFilter
             return $sessions;
         }
 
-        $needle = self::normalise(basename(str_replace('\\', '/', rtrim($projectPath, '/\\'))));
+        // Resolve relative paths like "." or "../app" to a real folder name
+        $resolved = realpath($projectPath) ?: $projectPath;
+        $needle   = self::normalise(basename(str_replace('\\', '/', rtrim($resolved, '/\\'))));
         if ($needle === '') {
             return $sessions;
         }

@@ -48,4 +48,16 @@ it('ProjectFilter keeps only sessions for the given project', function (): void 
 
     expect(ProjectFilter::apply($sessions, 'C:\\Work\\MoveZ')->pluck('id')->all())->toBe(['a', 'b'])
         ->and(ProjectFilter::apply($sessions, null))->toHaveCount(4);
+
+    // Relative paths resolve to the real folder name
+    withTempDir(function (string $dir) use ($sessions): void {
+        mkdir($dir . '/OtherApp');
+        $cwd = getcwd();
+        chdir($dir . '/OtherApp');
+        try {
+            expect(ProjectFilter::apply($sessions, '.')->pluck('id')->all())->toBe(['c']);
+        } finally {
+            chdir((string) $cwd);
+        }
+    });
 });
