@@ -1,5 +1,20 @@
 import * as vscode from 'vscode';
+import { randomBytes } from 'crypto';
+import { READABLE_TOOLS, WRITABLE_TOOLS, runCli, workspaceFolder } from './cli';
 
+interface TransferRequest {
+  type: 'transfer';
+  from: string;
+  to: string;
+  project: string;
+  fromPath: string;
+  toPath: string;
+}
+
+/**
+ * In-editor migration wizard. Runs `movez transfer` locally — session files
+ * live on this machine, so no server round-trip is involved.
+ */
 export class MigrationPanel {
   public static currentPanel: MigrationPanel | undefined;
 
@@ -8,20 +23,20 @@ export class MigrationPanel {
   private readonly _panel: vscode.WebviewPanel;
   private _disposables: vscode.Disposable[] = [];
 
-  private constructor(
-    panel: vscode.WebviewPanel,
-    private readonly serverUrl: string,
-  ) {
+  private constructor(panel: vscode.WebviewPanel, private readonly onTransferred: () => void) {
     this._panel = panel;
     this._panel.webview.html = this._getHtmlContent();
 
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
+    this._panel.webview.onDidReceiveMessage(
+      (msg: TransferRequest) => this.handleMessage(msg),
+      null,
+      this._disposables,
+    );
   }
 
-  public static createOrShow(extensionUri: vscode.Uri, serverUrl: string): void {
-    const column = vscode.window.activeTextEditor
-      ? vscode.window.activeTextEditor.viewColumn
-      : undefined;
+  public static createOrShow(onTransferred: () => void): void {
+    const column = vscode.window.activeTextEditor?.viewColumn;
 
     if (MigrationPanel.currentPanel) {
       MigrationPanel.currentPanel._panel.reveal(column);
@@ -32,13 +47,10 @@ export class MigrationPanel {
       MigrationPanel.viewType,
       'MoveZ Migration Wizard',
       column ?? vscode.ViewColumn.One,
-      {
-        enableScripts: true,
-        retainContextWhenHidden: true,
-      },
+      { enableScripts: true, retainContextWhenHidden: true, localResourceRoots: [] },
     );
 
-    MigrationPanel.currentPanel = new MigrationPanel(panel, serverUrl);
+    MigrationPanel.currentPanel = new MigrationPanel(panel, onTransferred);
   }
 
   public dispose(): void {
@@ -47,117 +59,123 @@ export class MigrationPanel {
     this._panel.dispose();
 
     while (this._disposables.length) {
-      const x = this._disposables.pop();
-      x?.dispose();
+      this._disposables.pop()?.dispose();
+    }
+  }
+
+  private async handleMessage(msg: TransferRequest): Promise<void> {
+    if (msg?.type !== 'transfer' || !READABLE_TOOLS.includes(msg.from) || !WRITABLE_TOOLS.includes(msg.to)) {
+      return;
+    }
+
+    const args = ['transfer', `--from=${msg.from}`, `--to=${msg.to}`];
+    if (msg.project) {
+      args.push(`--project=${msg.project}`);
+    }
+    if (msg.fromPath && msg.toPath) {
+      args.push(`--from-path=${msg.fromPath}`, `--to-path=${msg.toPath}`);
+    }
+
+    try {
+      const { stdout } = await runCli(args, { timeoutMs: 300_000 });
+      await this._panel.webview.postMessage({ type: 'done', ok: true, message: stdout.trim() || 'Transfer complete.' });
+      this.onTransferred();
+    } catch (err) {
+      await this._panel.webview.postMessage({
+        type: 'done',
+        ok: false,
+        message: err instanceof Error ? err.message : String(err),
+      });
     }
   }
 
   private _getHtmlContent(): string {
-    const serverUrl = this.serverUrl;
+    const nonce   = randomBytes(16).toString('base64');
+    const csp     = `default-src 'none'; style-src 'nonce-${nonce}'; script-src 'nonce-${nonce}';`;
+    const options = (tools: string[]) => tools.map((t) => `<option value="${t}">${t}</option>`).join('');
+    const project = escapeHtml(workspaceFolder() ?? '');
 
-    if (serverUrl) {
-      // If a server URL is configured, show an iframe pointing to the dashboard
-      return `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MoveZ Migration Wizard</title>
-  <style>
-    body, html { margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden; }
-    iframe { width: 100%; height: 100%; border: none; }
-  </style>
-</head>
-<body>
-  <iframe src="${serverUrl}/migration/wizard" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
-</body>
-</html>`;
-    }
-
-    // Fallback: embedded wizard steps
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="${csp}">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MoveZ Migration Wizard</title>
-  <style>
-    body { font-family: var(--vscode-font-family); color: var(--vscode-foreground); background: var(--vscode-editor-background); padding: 24px; }
+  <style nonce="${nonce}">
+    body { font-family: var(--vscode-font-family); color: var(--vscode-foreground); background: var(--vscode-editor-background); padding: 24px; max-width: 560px; }
     h1 { font-size: 1.4em; margin-bottom: 16px; }
-    .step { display: none; }
-    .step.active { display: block; }
-    select, input { background: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); padding: 6px 10px; border-radius: 4px; width: 300px; margin-bottom: 12px; }
-    button { background: var(--vscode-button-background); color: var(--vscode-button-foreground); border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-right: 8px; }
-    button:hover { background: var(--vscode-button-hoverBackground); }
-    .notice { padding: 12px; background: var(--vscode-editorInfo-background); border-radius: 4px; margin-bottom: 16px; }
+    label { display: block; font-size: 0.9em; margin: 12px 0 4px; }
+    select, input { background: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border, transparent); padding: 6px 10px; border-radius: 4px; width: 100%; box-sizing: border-box; }
+    .row { display: flex; gap: 12px; } .row > div { flex: 1; }
+    button { margin-top: 20px; background: var(--vscode-button-background); color: var(--vscode-button-foreground); border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+    button:disabled { opacity: 0.5; cursor: default; }
+    .hint { opacity: 0.75; font-size: 0.85em; }
+    #result { margin-top: 16px; padding: 10px 12px; border-radius: 4px; white-space: pre-wrap; display: none; }
+    #result.ok { display: block; background: var(--vscode-editorInfo-background, rgba(0,128,0,.15)); }
+    #result.err { display: block; background: var(--vscode-inputValidation-errorBackground); }
   </style>
 </head>
 <body>
   <h1>⚡ MoveZ Migration Wizard</h1>
-  <div class="notice">Configure a sync server URL in settings for the full web wizard experience.</div>
+  <p class="hint">Copies sessions from one AI tool into another on this machine.</p>
 
-  <div id="step1" class="step active">
-    <h2>Step 1: Source Tool</h2>
-    <select id="fromTool">
-      <option value="">Select source tool...</option>
-      <option value="cursor">Cursor</option>
-      <option value="windsurf">Windsurf</option>
-      <option value="claude-code">Claude Code</option>
-      <option value="codex">Codex</option>
-      <option value="copilot-cli">Copilot CLI</option>
-      <option value="cline">Cline</option>
-      <option value="continue">Continue</option>
-    </select>
-    <br><button onclick="nextStep(2)">Next →</button>
+  <label for="fromTool">Source tool</label>
+  <select id="fromTool"><option value="">Select source tool…</option>${options(READABLE_TOOLS)}</select>
+
+  <label for="toTool">Target tool</label>
+  <select id="toTool"><option value="">Select target tool…</option>${options(WRITABLE_TOOLS)}</select>
+
+  <label for="project">Project (sessions are filtered by this folder)</label>
+  <input id="project" value="${project}" placeholder="Leave empty to transfer all projects">
+
+  <div class="row">
+    <div><label for="fromPath">Remap from path (optional)</label><input id="fromPath" placeholder="/old/machine/projects"></div>
+    <div><label for="toPath">Remap to path (optional)</label><input id="toPath" placeholder="/new/machine/projects"></div>
   </div>
 
-  <div id="step2" class="step">
-    <h2>Step 2: Target Tool</h2>
-    <select id="toTool">
-      <option value="">Select target tool...</option>
-      <option value="cursor">Cursor</option>
-      <option value="windsurf">Windsurf</option>
-      <option value="claude-code">Claude Code</option>
-      <option value="codex">Codex</option>
-      <option value="copilot-cli">Copilot CLI</option>
-    </select>
-    <br><button onclick="nextStep(1)">← Back</button>
-    <button onclick="nextStep(3)">Next →</button>
-  </div>
+  <button id="run" disabled>Transfer sessions</button>
+  <div id="result"></div>
 
-  <div id="step3" class="step">
-    <h2>Step 3: Confirm</h2>
-    <p>Transfer sessions from <strong id="confirmFrom"></strong> to <strong id="confirmTo"></strong>.</p>
-    <button onclick="nextStep(2)">← Back</button>
-    <button onclick="runTransfer()">✓ Transfer</button>
-  </div>
+  <script nonce="${nonce}">
+    const vscode = acquireVsCodeApi();
+    const $ = (id) => document.getElementById(id);
+    const run = $('run');
 
-  <div id="step4" class="step">
-    <h2>✅ Done!</h2>
-    <p id="resultMsg"></p>
-    <button onclick="location.reload()">Start over</button>
-  </div>
-
-  <script>
-    let currentStep = 1;
-    function nextStep(n) {
-      document.getElementById('step' + currentStep).classList.remove('active');
-      currentStep = n;
-      document.getElementById('step' + n).classList.add('active');
-      if (n === 3) {
-        document.getElementById('confirmFrom').textContent = document.getElementById('fromTool').value;
-        document.getElementById('confirmTo').textContent = document.getElementById('toTool').value;
-      }
+    function validate() {
+      run.disabled = !$('fromTool').value || !$('toTool').value || $('fromTool').value === $('toTool').value;
     }
-    function runTransfer() {
-      const from = document.getElementById('fromTool').value;
-      const to = document.getElementById('toTool').value;
-      nextStep(4);
-      document.getElementById('resultMsg').textContent =
-        'Run: movez transfer --from=' + from + ' --to=' + to;
-    }
+    $('fromTool').addEventListener('change', validate);
+    $('toTool').addEventListener('change', validate);
+
+    run.addEventListener('click', () => {
+      run.disabled = true;
+      run.textContent = 'Transferring…';
+      $('result').className = '';
+      vscode.postMessage({
+        type: 'transfer',
+        from: $('fromTool').value,
+        to: $('toTool').value,
+        project: $('project').value.trim(),
+        fromPath: $('fromPath').value.trim(),
+        toPath: $('toPath').value.trim(),
+      });
+    });
+
+    window.addEventListener('message', (event) => {
+      const msg = event.data;
+      if (msg.type !== 'done') return;
+      run.textContent = 'Transfer sessions';
+      validate();
+      $('result').textContent = (msg.ok ? '✅ ' : '❌ ') + msg.message;
+      $('result').className = msg.ok ? 'ok' : 'err';
+    });
   </script>
 </body>
 </html>`;
   }
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
