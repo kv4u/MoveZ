@@ -94,8 +94,8 @@ movez show --tool=claude-code --id=<session-id>
 |---|---|---|
 | `list-sessions` | List detected sessions | `--tool`, `--project`, `--json` |
 | `show` | Print one session with all turns | `--tool`, `--id`, `--json` |
-| `export` | Write sessions to a `.cbz` bundle (or `.json`) | `--tool` (default `auto`), `--output`, `--project`, `--encrypt` |
-| `import` | Load a bundle into a tool | `--input`, `--tool`, `--project`, `--from-path`, `--to-path` |
+| `export` | Write sessions to a `.cbz` bundle (or `.json`) | `--tool` (default `auto`), `--output`, `--project`, `--encrypt`, `--with-config` |
+| `import` | Load a bundle into a tool | `--input`, `--tool`, `--project`, `--from-path`, `--to-path`, `--with-config` |
 | `transfer` | Export + import in one step | `--from`, `--to`, `--project`, `--from-path`, `--to-path` |
 | `package` | Turn a `.json` session list into a `.cbz` | `--input`, `--output`, `--encrypt` |
 | `unpack` | Extract a `.cbz` into one JSON file per session | `--input`, `--output` |
@@ -187,7 +187,7 @@ A `.cbz` is a ZIP archive:
 |---|---|
 | `bundle.json` | `{ version, source_tool, exported_at, sessions: [...] }`, AES-256-GCM encrypted when `manifest.encrypted` is true |
 | `manifest.json` | `{ version, source_tool, machine_sha, exported_at, session_count, encrypted }` |
-| `config.json` | Optional project config (rules, `CLAUDE.md`, MCP config) |
+| `config.json` | Optional project config (`CLAUDE.md`, `AGENTS.md`, `.cursorrules`, `.mcp.json`), added by `export --with-config` and restored by `import --with-config` (existing files are kept unless `--overwrite-config`) |
 
 Each session has `id, title, project, source_tool, created_at, last_active_at, turn_count, turns[]`. Each turn has `role, content, timestamp, files_referenced, file_diffs, reasoning_trace, tool_calls`.
 
