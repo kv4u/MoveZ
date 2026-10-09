@@ -37,7 +37,7 @@ class DoctorCommand extends Command
 
         $this->line('');
         $this->line($encryptor->hasKey()
-            ? " Encryption key: {$keyPath}"
+            ? " Encryption key: {$keyPath} (fingerprint {$encryptor->fingerprint()})"
             : " Encryption key: not created yet (it is generated on first encrypted export or sync:push)");
 
         // Detected tools

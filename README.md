@@ -101,6 +101,8 @@ movez show --tool=claude-code --id=<session-id>
 | `unpack` | Extract a `.cbz` into one JSON file per session | `--input`, `--output` |
 | `sync:push` | Encrypt and upload sessions to your server | `--server`, `--tool`, `--project` |
 | `sync:pull` | Download, decrypt and import sessions | `--server`, `--tool`, `--project`, `--from-path`, `--to-path` |
+| `key:export` / `key:import` | Move the encryption key to another machine | `--output` / `--file`, `--force` |
+| `key:fingerprint` | Non-secret key fingerprint, to compare machines | |
 | `doctor` | Check requirements and detected tools | |
 
 Run `movez <command> --help` for details.
@@ -146,7 +148,13 @@ Sessions are written under `~/.claude/projects/<encoded-path>/`. On Windows they
    export MOVEZ_SERVER_URL=https://sync.example.com
    export MOVEZ_TOKEN=<token>          # or save it in ~/.movez/token
    ```
-3. **Share the encryption key.** Sessions are encrypted with `~/.movez/key`, which is created on your first encrypted export or push. **Copy that file to every machine you pull on.** Without it, nothing can be decrypted, including by the server.
+3. **Share the encryption key.** Sessions are encrypted with `~/.movez/key`, which is created on your first encrypted export or push. **Every machine you pull on needs the same key.** Without it, nothing can be decrypted, including by the server.
+   ```bash
+   movez key:export > movez.key          # machine A — treat the output like a password
+   movez key:import --file=movez.key     # machine B (or paste it when prompted)
+   movez key:export | ssh machine-b movez key:import   # or in one step over SSH
+   movez key:fingerprint                 # run on both; the fingerprints must match
+   ```
 4. **Push and pull:**
    ```bash
    movez sync:push --tool=claude-code                    # machine A
@@ -245,7 +253,7 @@ cd electron-app && npm run typecheck       # desktop app type check
 ## Security
 
 - Sessions are encrypted client-side with AES-256-GCM before export or sync. The server stores only ciphertext.
-- The key lives at `~/.movez/key` (0600 on macOS/Linux) and never leaves your machines unless you copy it.
+- The key lives at `~/.movez/key` (0600 on macOS/Linux) and only leaves your machine when you run `movez key:export`. `key:import` never accepts the key as a command-line argument.
 - API tokens are stored server-side as SHA-256 hashes.
 - No telemetry. MoveZ only talks to the sync server you configure.
 

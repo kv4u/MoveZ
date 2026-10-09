@@ -111,7 +111,13 @@ export MOVEZ_SERVER_URL=https://sync.example.com
 export MOVEZ_TOKEN=<token from movez:token>   # or save it in ~/.movez/token
 ```
 
-Copy `~/.movez/key` from the first machine to the others. **Without the same key, pulled sessions can't be decrypted.**
+Every machine needs the same encryption key. **Without it, pulled sessions can't be decrypted.**
+
+```bash
+movez key:export > movez.key            # first machine
+movez key:import --file=movez.key       # every other machine
+movez key:fingerprint                   # must print the same value everywhere
+```
 
 ```bash
 movez sync:push --tool=claude-code                  # upload (replaces the previous upload)
