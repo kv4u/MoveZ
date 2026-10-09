@@ -32,7 +32,7 @@ CLI output and errors are logged to the **MoveZ** output channel.
 
 ## Sync between machines
 
-Bundles and sync payloads are encrypted with the key at `~/.movez/key`. Copy that file to every machine you want to pull on, or decryption will fail.
+Bundles and sync payloads are encrypted with the key at `~/.movez/key`. Every machine you pull on needs the same key: run `movez key:export` on one machine and `movez key:import` on the others, or decryption will fail.
 
 ## Install from VSIX
 
