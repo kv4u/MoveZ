@@ -79,12 +79,13 @@ return [
             'format' => 'jsonl',
         ],
         'copilot-cli' => [
+            // One directory per session: session-state/<uuid>/events.jsonl + workspace.yaml
             'storage' => [
-                'Darwin'  => '~/.copilot/sessions',
-                'Linux'   => '~/.copilot/sessions',
-                'Windows' => '%USERPROFILE%/.copilot/sessions',
+                'Darwin'  => '~/.copilot/session-state',
+                'Linux'   => '~/.copilot/session-state',
+                'Windows' => '%USERPROFILE%/.copilot/session-state',
             ],
-            'format' => 'json',
+            'format' => 'jsonl-events',
         ],
         'cline' => [
             'storage' => [
@@ -95,13 +96,13 @@ return [
             'format' => 'json',
         ],
         'continue' => [
+            // sessions/<sessionId>.json plus a sessions.json index (CONTINUE_GLOBAL_DIR overrides ~/.continue)
             'storage' => [
-                'Darwin'  => '~/.continue',
-                'Linux'   => '~/.continue',
-                'Windows' => '%USERPROFILE%/.continue',
+                'Darwin'  => '~/.continue/sessions',
+                'Linux'   => '~/.continue/sessions',
+                'Windows' => '%USERPROFILE%/.continue/sessions',
             ],
-            'db_file' => 'sessions.db',
-            'format'  => 'sqlite',
+            'format' => 'json',
         ],
     ],
 
