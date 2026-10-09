@@ -7,6 +7,7 @@ use App\Contracts\ParserInterface;
 use App\DTOs\SessionDTO;
 use App\DTOs\TurnDTO;
 use App\Support\ContentFlattener;
+use App\Support\EncodedPathResolver;
 use App\Support\PlatformPaths;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -266,6 +267,12 @@ class ClaudeCodeParser extends JsonlParser implements ParserInterface
 
     private function decodeProjectName(string $encoded): string
     {
+        // Exact answer when the project folder exists on this machine
+        $resolved = EncodedPathResolver::projectName($encoded);
+        if ($resolved !== null) {
+            return $resolved;
+        }
+
         // Claude Code encodes paths as "D--Flutter-Aurora" (drive + double-dash + path segments)
         $stripped = preg_replace('/^[A-Za-z]--/', '', $encoded) ?? $encoded;
         $parts    = explode('-', $stripped);
