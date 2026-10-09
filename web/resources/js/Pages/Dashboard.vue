@@ -11,6 +11,15 @@
           <a href="/migration/wizard" class="rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700 transition-colors">
             Migration Wizard
           </a>
+          <span v-if="user" class="text-gray-400" data-testid="current-user">{{ user.name }}</span>
+          <Link
+            href="/logout"
+            method="post"
+            as="button"
+            class="text-gray-500 hover:text-gray-800"
+          >
+            Sign out
+          </Link>
         </nav>
       </div>
     </header>
@@ -62,9 +71,13 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
+import { Link, usePage } from '@inertiajs/vue3';
 import StatCard from '@/Components/StatCard.vue';
 import SyncStatus from '@/Components/SyncStatus.vue';
-import type { DashboardStats } from '@/types';
+import type { DashboardStats, SharedProps } from '@/types';
 
 defineProps<{ stats: DashboardStats }>();
+
+const user = computed(() => usePage<SharedProps>().props.auth.user);
 </script>
