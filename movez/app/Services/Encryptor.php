@@ -59,7 +59,7 @@ final class Encryptor
         // would hide the real problem (key not copied from the source machine).
         if (!$this->hasKey()) {
             throw new RuntimeException(
-                "No encryption key found at {$this->keyPath}. Copy ~/.movez/key from the machine that encrypted the data."
+                "No encryption key found at {$this->keyPath}. Run `movez key:export` on the machine that encrypted the data, then `movez key:import` here."
             );
         }
 
@@ -81,6 +81,57 @@ final class Encryptor
         }
 
         return $pt;
+    }
+
+    /** The key as 64 hex characters, for moving it to another machine. */
+    public function exportKey(): string
+    {
+        return bin2hex($this->getOrCreateKey());
+    }
+
+    /**
+     * Short, non-secret identifier of the key. Two machines can compare
+     * fingerprints to check they hold the same key without revealing it.
+     */
+    public function fingerprint(): ?string
+    {
+        if (!$this->hasKey()) {
+            return null;
+        }
+
+        return implode(':', str_split(substr(hash('sha256', 'movez-key-fingerprint:' . $this->readKey()), 0, 16), 4));
+    }
+
+    /**
+     * Install a key exported from another machine.
+     *
+     * @throws RuntimeException when the key is malformed, or a different key exists and $force is false
+     */
+    public function importKey(string $hex, bool $force = false): void
+    {
+        $hex = strtolower(trim($hex));
+        if (str_starts_with($hex, 'movez-key:')) {
+            $hex = substr($hex, strlen('movez-key:'));
+        }
+
+        if (strlen($hex) !== 64 || !ctype_xdigit($hex)) {
+            throw new RuntimeException('Invalid key: expected 64 hex characters (as printed by `movez key:export`)');
+        }
+
+        if ($this->hasKey() && !$force && !hash_equals(bin2hex($this->readKey()), $hex)) {
+            throw new RuntimeException(
+                "A different key already exists at {$this->keyPath}. Bundles encrypted with it can't be read after replacing it. Use --force to replace it."
+            );
+        }
+
+        $dir = dirname($this->keyPath);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0700, true);
+        }
+
+        touch($this->keyPath);
+        chmod($this->keyPath, 0600);
+        file_put_contents($this->keyPath, $hex);
     }
 
     private function readKey(): string

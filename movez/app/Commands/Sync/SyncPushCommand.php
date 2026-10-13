@@ -52,7 +52,7 @@ class SyncPushCommand extends Command
         }
 
         $this->info("Pushed {$sessions->count()} session(s) from {$toolName} to {$baseUrl}");
-        $this->line("Pull on another machine needs the same key: copy {$encryptor->keyPath()} there.");
+        $this->line("Pulling on another machine needs the same key: run `movez key:export` here and `movez key:import` there (fingerprint {$encryptor->fingerprint()}).");
         return self::SUCCESS;
     }
 }

@@ -64,7 +64,7 @@ Click the MoveZ icon in the activity bar. The view lists sessions belonging to t
 | **MoveZ: Set Sync Token** | Saves (or clears, if left empty) the sync API token. |
 | **MoveZ: Refresh Sessions** | Reloads the Sessions view. |
 
-Sync needs the same `~/.movez/key` on every machine. See [sync-server-setup.md](sync-server-setup.md).
+Sync needs the same encryption key on every machine: run `movez key:export` on one and `movez key:import` on the others. See [sync-server-setup.md](sync-server-setup.md).
 
 ---
 
