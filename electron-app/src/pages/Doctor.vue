@@ -17,6 +17,8 @@ async function run() {
   try {
     const result = await window.bridge.runDoctor()
     success.value = result.success
+    // Streamed lines can be cut off when the reply overtakes them; the result is complete
+    lines.value = result.lines
   } finally {
     off()
     running.value = false
