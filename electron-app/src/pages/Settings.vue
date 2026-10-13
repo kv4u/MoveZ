@@ -29,7 +29,7 @@ async function browseCliPath() {
 
 async function browsePhpPath() {
   const path = await window.bridge.openFile({
-    title:   'Select php.exe',
+    title:   'Select the PHP executable',
     filters: [{ name: 'PHP Executable', extensions: ['exe', '*'] }]
   })
   if (path) form.value.phpPath = path
@@ -78,7 +78,7 @@ async function browsePhpPath() {
           <input
             v-model="form.phpPath"
             type="text"
-            placeholder="php  or  C:\xampp\php\php.exe"
+            placeholder="php  (uses the bundled PHP)"
             class="flex-1 px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm text-slate-200
                    placeholder-slate-600 focus:outline-none focus:border-brand-500"
           />
@@ -90,7 +90,10 @@ async function browsePhpPath() {
             Browse
           </button>
         </div>
-        <p class="text-xs text-slate-600 mt-1">e.g. <code class="text-slate-500">D:\xampp\php\php.exe</code></p>
+        <p class="text-xs text-slate-600 mt-1">
+          Leave as <code class="text-slate-500">php</code> to use the PHP bundled with the app, or point to your own,
+          e.g. <code class="text-slate-500">C:\php\php.exe</code> or <code class="text-slate-500">/usr/local/bin/php</code>
+        </p>
       </div>
 
 

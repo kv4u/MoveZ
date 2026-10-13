@@ -1,6 +1,6 @@
 import { spawn } from 'child_process'
 import { join } from 'path'
-import { existsSync } from 'fs'
+import { accessSync, chmodSync, constants, existsSync } from 'fs'
 import { app } from 'electron'
 import Store from 'electron-store'
 
@@ -18,6 +18,24 @@ function bundledPhpPath(): string {
     ? process.resourcesPath
     : join(__dirname, '../../resources')
   return join(base, 'php', process.platform === 'win32' ? 'php.exe' : 'php')
+}
+
+/**
+ * On macOS/Linux the bundled static PHP must be executable. Packaging normally
+ * preserves the mode, but restore it if it was lost (best effort: the app
+ * bundle may be read-only, in which case spawning reports the real error).
+ */
+function ensureExecutable(path: string): void {
+  if (process.platform === 'win32') return
+  try {
+    accessSync(path, constants.X_OK)
+  } catch {
+    try {
+      chmodSync(path, 0o755)
+    } catch {
+      // ignore — spawn will surface a clear EACCES error
+    }
+  }
 }
 
 /** Path to bundled PHAR inside the installed app resources */
@@ -38,13 +56,17 @@ export function getCliPath(): string {
 }
 
 function buildSpawnArgs(cliPath: string, args: string[]): { cmd: string; cmdArgs: string[] } {
-  // .phar files must be run via php.exe
+  // .phar files must be run through PHP
   if (cliPath.toLowerCase().endsWith('.phar')) {
     const storedPhp = store.get('phpPath') as string | undefined
     // Prefer stored, else bundled, else system php
-    const phpBin = (storedPhp && storedPhp !== 'php')
-      ? storedPhp
-      : existsSync(bundledPhpPath()) ? bundledPhpPath() : 'php'
+    let phpBin = 'php'
+    if (storedPhp && storedPhp !== 'php') {
+      phpBin = storedPhp
+    } else if (existsSync(bundledPhpPath())) {
+      phpBin = bundledPhpPath()
+      ensureExecutable(phpBin)
+    }
     return { cmd: phpBin, cmdArgs: ['-d', 'memory_limit=512M', cliPath, ...args] }
   }
   return { cmd: cliPath, cmdArgs: args }
