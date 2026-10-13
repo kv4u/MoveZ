@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gray-50">
     <header class="bg-white border-b border-gray-200 px-6 py-4">
       <div class="max-w-2xl mx-auto flex items-center gap-4">
-        <a href="/" class="text-gray-400 hover:text-gray-600">← Home</a>
+        <Link href="/" class="text-gray-400 hover:text-gray-600">← Home</Link>
         <h1 class="text-xl font-bold text-gray-900">Migration Wizard</h1>
       </div>
     </header>
@@ -185,6 +185,7 @@
 </template>
 
 <script setup lang="ts">
+import { Link } from '@inertiajs/vue3';
 import { computed, ref, reactive } from 'vue';
 import ToolBadge from '@/Components/ToolBadge.vue';
 import type { Project } from '@/types';

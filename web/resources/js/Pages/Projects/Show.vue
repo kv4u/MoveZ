@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gray-50">
     <header class="bg-white border-b border-gray-200 px-6 py-4">
       <div class="max-w-7xl mx-auto flex items-center gap-4">
-        <a href="/projects" class="text-gray-400 hover:text-gray-600">← Projects</a>
+        <Link href="/projects" class="text-gray-400 hover:text-gray-600">← Projects</Link>
         <h1 class="text-xl font-bold text-gray-900">{{ project.name }}</h1>
       </div>
     </header>
@@ -30,6 +30,7 @@
 </template>
 
 <script setup lang="ts">
+import { Link } from '@inertiajs/vue3';
 import SessionCard from '@/Components/SessionCard.vue';
 import type { AiSession, Project } from '@/types';
 

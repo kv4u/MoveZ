@@ -66,3 +66,10 @@ export interface SharedProps {
   auth: { user: AuthUser | null };
   [key: string]: unknown;
 }
+
+/** One entry of a Laravel paginator's `links` array. */
+export interface PaginationLink {
+  url: string | null;
+  label: string;
+  active: boolean;
+}

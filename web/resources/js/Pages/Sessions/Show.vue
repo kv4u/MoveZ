@@ -2,11 +2,11 @@
   <div class="min-h-screen bg-gray-50">
     <header class="bg-white border-b border-gray-200 px-6 py-4">
       <div class="max-w-4xl mx-auto flex items-center gap-4">
-        <a
+        <Link
           v-if="session.project"
           :href="`/projects/${session.project_id}`"
           class="text-gray-400 hover:text-gray-600"
-        >← Project</a>
+        >← Project</Link>
         <h1 class="text-xl font-bold text-gray-900">{{ session.title }}</h1>
         <ToolBadge :tool="session.source_tool" />
       </div>
@@ -39,6 +39,7 @@
 </template>
 
 <script setup lang="ts">
+import { Link } from '@inertiajs/vue3';
 import ToolBadge from '@/Components/ToolBadge.vue';
 import TurnBlock from '@/Components/TurnBlock.vue';
 import type { AiSession, SessionDTO } from '@/types';
