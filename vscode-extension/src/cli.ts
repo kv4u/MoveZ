@@ -29,7 +29,10 @@ export function workspaceFolder(): string | undefined {
  * apply without reloading the window. A .phar path is run through PHP, which
  * is required on Windows where .phar files are not directly executable.
  */
-function resolveCommand(args: string[]): { cmd: string; cmdArgs: string[] } {
+function resolveCommand(cliArgs: string[]): { cmd: string; cmdArgs: string[] } {
+  // Symfony Console enables colours when it sees terminal env vars inherited from
+  // the editor's environment, which would put escape codes into notifications
+  const args    = [...cliArgs, '--no-ansi'];
   const config  = vscode.workspace.getConfiguration('movez');
   const cliPath = config.get<string>('cliPath', 'movez') || 'movez';
   const phpPath = config.get<string>('phpPath', 'php') || 'php';

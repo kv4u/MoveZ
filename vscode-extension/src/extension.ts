@@ -18,7 +18,12 @@ function showError(prefix: string, err: unknown): void {
     .then((choice) => choice && outputChannel().show());
 }
 
-export function activate(context: vscode.ExtensionContext): void {
+/** Returned from activate(); used by the integration tests to inspect the Sessions view. */
+export interface MovezApi {
+  sessionTree: SessionTreeProvider;
+}
+
+export function activate(context: vscode.ExtensionContext): MovezApi {
   const provider = new SessionTreeProvider();
 
   context.subscriptions.push(
@@ -241,6 +246,8 @@ export function activate(context: vscode.ExtensionContext): void {
       );
     }),
   );
+
+  return { sessionTree: provider };
 }
 
 export function deactivate(): void {

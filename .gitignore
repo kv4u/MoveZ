@@ -50,3 +50,4 @@ npm-debug.log*
 # Personal utility scripts
 movez/bundle_export.php
 movez/make_cbz.php
+vscode-extension/.vscode-test/

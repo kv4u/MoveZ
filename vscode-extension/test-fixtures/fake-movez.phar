@@ -1,0 +1,30 @@
+<?php
+// Stand-in for movez.phar in the extension's integration tests. It is a plain PHP
+// script (PHP runs any file it is given), records how it was invoked, and answers
+// list-sessions with two fixed sessions.
+
+$log = getenv('MOVEZ_FAKE_LOG');
+if ($log) {
+    file_put_contents($log, json_encode(['argv' => array_slice($argv, 1)]) . "\n", FILE_APPEND);
+}
+
+$command = $argv[1] ?? '';
+
+if ($command === 'list-sessions') {
+    echo json_encode([
+        [
+            'id' => 'a1', 'title' => 'Add a health check', 'project' => 'workspace', 'source_tool' => 'claude-code',
+            'source_machine_id' => 'x', 'created_at' => '2026-10-01T10:00:00+00:00',
+            'last_active_at' => '2026-10-01T10:05:00+00:00', 'turn_count' => 4, 'turns' => [],
+        ],
+        [
+            'id' => 'b2', 'title' => 'Refactor <info>auth</info>', 'project' => 'workspace', 'source_tool' => 'cursor',
+            'source_machine_id' => 'x', 'created_at' => '2026-10-02T10:00:00+00:00',
+            'last_active_at' => '2026-10-02T10:05:00+00:00', 'turn_count' => 12, 'turns' => [],
+        ],
+    ], JSON_PRETTY_PRINT);
+    exit(0);
+}
+
+fwrite(STDERR, "fake movez: unsupported command {$command}\n");
+exit(1);

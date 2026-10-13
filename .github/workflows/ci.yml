@@ -119,6 +119,17 @@ jobs:
         working-directory: vscode-extension
         run: npm test
 
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          coverage: none
+
+      # Loads the extension into a downloaded VS Code (headless via xvfb) and checks
+      # activation, commands and the Sessions view against a stub CLI
+      - name: Integration tests in VS Code
+        working-directory: vscode-extension
+        run: xvfb-run -a npm run test:integration
+
       - name: Package VSIX (non-interactive)
         working-directory: vscode-extension
         run: npx vsce package --no-dependencies --out movez-vscode.vsix
