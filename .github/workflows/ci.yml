@@ -82,6 +82,23 @@ jobs:
         working-directory: web
         run: php artisan test
 
+      - name: Seed demo data for end-to-end tests
+        working-directory: web
+        run: php artisan db:seed --force
+
+      - name: Install Playwright browser
+        working-directory: web
+        run: npx playwright install --with-deps chromium
+
+      - name: Run end-to-end tests
+        working-directory: web
+        run: |
+          php artisan serve --port=8000 > /tmp/serve.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:8000/login > /dev/null && break; sleep 1; done
+          npx playwright test
+        env:
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:8000
+
   extension-build:
     name: VS Code Extension Build
     runs-on: ubuntu-latest

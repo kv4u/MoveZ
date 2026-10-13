@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -17,12 +18,12 @@ class MigrationController extends Controller
     /** Tools the CLI can write to. */
     private const TARGET_TOOLS = ['cursor', 'claude-code', 'codex', 'copilot-cli'];
 
-    public function wizard(): Response
+    public function wizard(Request $request): Response
     {
         return Inertia::render('Migration/Wizard', [
             'supportedTools' => self::SOURCE_TOOLS,
             'writableTools'  => self::TARGET_TOOLS,
-            'projects'       => Project::latest()->get(['id', 'name', 'path']),
+            'projects'       => $request->user()->projects()->latest()->get(['id', 'name', 'path']),
         ]);
     }
 
@@ -35,7 +36,10 @@ class MigrationController extends Controller
         $validated = $request->validate([
             'from_tool'  => ['required', 'string', 'in:' . implode(',', self::SOURCE_TOOLS)],
             'to_tool'    => ['required', 'string', 'in:' . implode(',', self::TARGET_TOOLS), 'different:from_tool'],
-            'project_id' => ['nullable', 'integer', 'exists:projects,id'],
+            'project_id' => [
+                'nullable', 'integer',
+                Rule::exists('projects', 'id')->where('user_id', $request->user()->id),
+            ],
             'from_path'  => ['nullable', 'string', 'max:1024'],
             'to_path'    => ['nullable', 'string', 'max:1024'],
         ]);

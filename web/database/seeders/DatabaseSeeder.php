@@ -14,6 +14,16 @@ class DatabaseSeeder extends Seeder
     {
         $users = User::factory(2)->create();
 
+        // Known login for local development and the Playwright suite — never in production
+        if (app()->environment(['local', 'testing'])) {
+            $users->prepend(User::factory()->create([
+                'name'     => 'Demo',
+                'email'    => 'demo@movez.test',
+                'password' => 'password',
+            ]));
+            $this->command?->info('Dashboard login: demo@movez.test / password');
+        }
+
         foreach ($users as $user) {
             // Only the hash is stored, so print the plaintext once for local testing
             $token = $user->issueApiToken();

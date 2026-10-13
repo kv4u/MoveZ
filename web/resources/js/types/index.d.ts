@@ -54,3 +54,15 @@ export interface DashboardStats {
 }
 
 export type SyncStatus = 'synced' | 'pending' | 'error';
+
+export interface AuthUser {
+  id: number;
+  name: string;
+  email: string;
+}
+
+/** Props shared with every page by HandleInertiaRequests. */
+export interface SharedProps {
+  auth: { user: AuthUser | null };
+  [key: string]: unknown;
+}

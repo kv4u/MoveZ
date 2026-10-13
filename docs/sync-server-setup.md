@@ -67,9 +67,11 @@ php artisan migrate --force
 ### 4. Create a user and an API token
 
 ```bash
-php artisan tinker --execute="App\Models\User::create(['name' => 'Me', 'email' => 'me@example.com', 'password' => 'change-me']);"
+php artisan movez:user me@example.com --name="Me"   # prompts for a password (min 12 characters)
 php artisan movez:token me@example.com
 ```
+
+There is no public registration. Every dashboard user is created this way, and each user only sees their own projects, sessions and sync data.
 
 `movez:token` prints the token **once**. Only its SHA-256 hash is stored. Running it again replaces the old token.
 
@@ -98,7 +100,7 @@ server {
 }
 ```
 
-> The web dashboard has **no login yet**. Restrict it (VPN, IP allow-list or HTTP basic auth on everything except `/api/*`) until authentication lands. The `/api/sync/*` endpoints are protected by API tokens.
+> The dashboard requires signing in (`/login`, rate-limited to 5 attempts per minute). The `/api/sync/*` endpoints use API tokens instead of the login session.
 
 ---
 

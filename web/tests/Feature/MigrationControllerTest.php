@@ -2,17 +2,25 @@
 declare(strict_types=1);
 
 use App\Models\Project;
+use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 
-it('migration wizard returns Inertia page', function (): void {
-    $response = $this->withoutVite()->get('/migration/wizard');
+beforeEach(function (): void {
+    $this->user = User::factory()->create();
+    $this->actingAs($this->user);
+});
 
-    $response->assertStatus(200)
+it('migration wizard returns Inertia page with the user\'s projects', function (): void {
+    Project::factory()->create(['user_id' => $this->user->id]);
+    Project::factory()->create();   // someone else's
+
+    $this->withoutVite()->get('/migration/wizard')
+        ->assertStatus(200)
         ->assertInertia(fn (Assert $page) => $page
             ->component('Migration/Wizard')
             ->has('supportedTools')
             ->has('writableTools')
-            ->has('projects')
+            ->has('projects', 1)
         );
 });
 
@@ -26,8 +34,16 @@ it('migration start rejects tools the CLI cannot write to', function (): void {
         ->assertJsonValidationErrors('to_tool');
 });
 
+it('migration start rejects another user\'s project', function (): void {
+    $project = Project::factory()->create();
+
+    $this->postJson('/migration/start', ['from_tool' => 'cursor', 'to_tool' => 'codex', 'project_id' => $project->id])
+        ->assertStatus(422)
+        ->assertJsonValidationErrors('project_id');
+});
+
 it('migration start returns the CLI command to run', function (): void {
-    $project = Project::factory()->create(['path' => '/home/dev/my app']);
+    $project = Project::factory()->create(['user_id' => $this->user->id, 'path' => '/home/dev/my app']);
 
     $this->postJson('/migration/start', [
         'from_tool'  => 'cursor',

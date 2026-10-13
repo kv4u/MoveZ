@@ -137,8 +137,9 @@ Sessions are written under `~/.claude/projects/<encoded-path>/`. On Windows they
 
 ## Sync between machines
 
-1. **Run a sync server.** See [docs/sync-server-setup.md](docs/sync-server-setup.md). Then issue yourself a token:
+1. **Run a sync server.** See [docs/sync-server-setup.md](docs/sync-server-setup.md). Then create your account and issue yourself a token:
    ```bash
+   php artisan movez:user you@example.com
    php artisan movez:token you@example.com
    ```
 2. **Configure each machine.** Prefer environment variables, because command-line arguments are visible to other processes:
@@ -175,7 +176,7 @@ Install `movez-vscode.vsix` with **Extensions: Install from VSIX…**. It adds a
 
 ## Web dashboard
 
-The sync server also serves a dashboard: projects, sessions, and a migration wizard that builds the exact `movez transfer` command for you. It is meant for a private, single-user deployment; the dashboard has no login yet (see Roadmap).
+The sync server also serves a dashboard: projects, sessions, and a migration wizard that builds the exact `movez transfer` command for you. Sign in with an account created on the server (`php artisan movez:user you@example.com`); there is no public registration, and each user only sees their own projects and sessions.
 
 ---
 
@@ -252,7 +253,6 @@ cd electron-app && npm run typecheck       # desktop app type check
 ## Roadmap
 
 - Windsurf support (blocked on its encrypted Cascade storage)
-- Login and per-user scoping for the web dashboard
 - Server-side migration jobs (Horizon)
 - macOS and Linux desktop builds
 
