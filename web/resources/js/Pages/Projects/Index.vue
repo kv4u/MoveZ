@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gray-50">
     <header class="bg-white border-b border-gray-200 px-6 py-4">
       <div class="max-w-7xl mx-auto flex items-center gap-4">
-        <a href="/" class="text-gray-400 hover:text-gray-600">← Home</a>
+        <Link href="/" class="text-gray-400 hover:text-gray-600">← Home</Link>
         <h1 class="text-xl font-bold text-gray-900">Projects</h1>
       </div>
     </header>
@@ -14,7 +14,7 @@
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <a
+        <Link
           v-for="project in projects.data"
           :key="project.id"
           :href="`/projects/${project.id}`"
@@ -31,20 +31,25 @@
               {{ project.ai_sessions_count }} session(s)
             </span>
           </div>
-        </a>
+        </Link>
       </div>
+
+      <Pagination :links="projects.links" />
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { Project } from '@/types';
+import { Link } from '@inertiajs/vue3';
+import Pagination from '@/Components/Pagination.vue';
+import type { PaginationLink, Project } from '@/types';
 
 defineProps<{
   projects: {
     data: Project[];
     current_page: number;
     last_page: number;
+    links: PaginationLink[];
   };
 }>();
 </script>

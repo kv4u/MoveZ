@@ -1,5 +1,5 @@
 <template>
-  <a
+  <Link
     :href="`/sessions/${session.id}`"
     class="block rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all group"
   >
@@ -17,10 +17,11 @@
     <div class="mt-3 flex items-center gap-4 text-xs text-gray-400">
       <span>Session {{ session.session_id?.substring(0, 8) }}</span>
     </div>
-  </a>
+  </Link>
 </template>
 
 <script setup lang="ts">
+import { Link } from '@inertiajs/vue3';
 import ToolBadge from './ToolBadge.vue';
 import type { AiSession } from '@/types';
 
