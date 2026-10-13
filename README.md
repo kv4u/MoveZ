@@ -41,6 +41,8 @@ Everything is on the [latest release](https://github.com/kv4u/MoveZ/releases/lat
 | Download | For | Needs |
 |---|---|---|
 | `MoveZ-Setup-<version>.exe` | Windows desktop app | Nothing, PHP and the CLI are bundled |
+| `MoveZ-<version>-mac-arm64.dmg` | macOS desktop app (Apple Silicon) | Nothing, PHP and the CLI are bundled |
+| `MoveZ-<version>-linux-x86_64.AppImage` | Linux desktop app (x86-64) | Nothing, PHP and the CLI are bundled |
 | `movez.phar` | CLI on macOS, Linux, Windows | PHP 8.2+ with `pdo_sqlite`, `openssl`, `zip`, `mbstring` |
 | `movez-vscode.vsix` | VS Code / Cursor extension | The CLI (above) |
 
@@ -169,9 +171,13 @@ Sessions are written under `~/.claude/projects/<encoded-path>/`. On Windows they
 
 ---
 
-## Desktop app (Windows)
+## Desktop app
 
-Install `MoveZ-Setup-<version>.exe` and launch **MoveZ**:
+- **Windows:** run `MoveZ-Setup-<version>.exe`.
+- **macOS (Apple Silicon):** open the `.dmg` and drag MoveZ to Applications. The app isn't code-signed yet, so the first time right-click it and choose **Open**.
+- **Linux:** `chmod +x MoveZ-*.AppImage`, then run it.
+
+Each build bundles PHP and the CLI. Launch **MoveZ**:
 
 | Page | What it does |
 |---|---|
@@ -213,7 +219,7 @@ Encrypted data uses the layout `base64(iv[12] ‖ tag[16] ‖ ciphertext)`.
 ```
 movez/             Laravel Zero CLI → movez.phar
 web/               Laravel 12 + Inertia + Vue 3 dashboard and sync server
-electron-app/      Electron + Vue 3 Windows desktop app (bundles PHP + movez.phar)
+electron-app/      Electron + Vue 3 desktop app for Windows, macOS, Linux (bundles PHP + movez.phar)
 vscode-extension/  VS Code / Cursor extension (TypeScript)
 docs/              Sync server and extension guides
 ```
@@ -237,11 +243,11 @@ cp .env.example .env && php artisan key:generate && php artisan migrate
 # Extension
 cd vscode-extension && npm ci && npx vsce package --no-dependencies
 
-# Desktop app (Windows)
+# Desktop app (Windows; macOS/Linux builds are produced by the release workflow)
 build.bat   # needs movez/box.phar and PHP in electron-app/resources/php/
 ```
 
-Pushing a `v*` tag runs the release workflow, which builds and publishes the PHAR, the VSIX and the Windows installer.
+Pushing a `v*` tag runs the release workflow, which builds and publishes the PHAR, the VSIX and the Windows, macOS and Linux desktop apps. Pull requests that touch `electron-app/` run the same builds without publishing.
 
 ### Tests
 
@@ -265,8 +271,7 @@ cd electron-app && npm run typecheck       # desktop app type check
 ## Roadmap
 
 - Windsurf support (blocked on its encrypted Cascade storage)
-- Server-side migration jobs (Horizon)
-- macOS and Linux desktop builds
+- Code-signed macOS build and Intel Mac support
 
 ## License
 
