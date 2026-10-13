@@ -2,7 +2,7 @@
   "name": "movez",
   "displayName": "MoveZ",
   "description": "Transfer and migrate AI coding sessions between tools and machines",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "publisher": "movez",
   "license": "MIT",
   "icon": "resources/icon.png",

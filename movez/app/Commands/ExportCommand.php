@@ -5,6 +5,7 @@ namespace App\Commands;
 
 use App\Services\Encryptor;
 use App\Services\Packager;
+use App\Services\ProjectConfigFiles;
 use App\Services\ToolDetector;
 use App\Support\ProjectFilter;
 use LaravelZero\Framework\Commands\Command;
@@ -15,11 +16,12 @@ class ExportCommand extends Command
                             {--tool=auto : Tool to export from (cursor|claude-code|codex|copilot-cli|cline|continue|auto)}
                             {--output= : Output file path (.cbz bundle, or .json for a plain session list)}
                             {--project= : Only export sessions belonging to this project path}
-                            {--encrypt : Encrypt the output with AES-256-GCM}';
+                            {--encrypt : Encrypt the output with AES-256-GCM}
+                            {--with-config : Also bundle CLAUDE.md, AGENTS.md, .cursorrules and .mcp.json from the project (.cbz only)}';
 
     protected $description = 'Export AI coding sessions to a portable bundle';
 
-    public function handle(ToolDetector $detector, Encryptor $encryptor, Packager $packager): int
+    public function handle(ToolDetector $detector, Encryptor $encryptor, Packager $packager, ProjectConfigFiles $configFiles): int
     {
         $toolName   = (string) $this->option('tool');
         $outputPath = (string) ($this->option('output') ?: ('movez-export-' . date('Ymd-His') . '.cbz'));
@@ -63,7 +65,24 @@ class ExportCommand extends Command
 
                 file_put_contents($outputPath, $json);
             } else {
-                $packager->pack($sessions, $outputPath, null, $toolName, $encrypt ? $encryptor : null);
+                $config = $this->option('with-config')
+                    ? $configFiles->collect((string) ($project ?? getcwd()))
+                    : null;
+
+                if ($this->option('with-config')) {
+                    $bundled = [];
+                    foreach (ProjectConfigFiles::FILES as $field => $file) {
+                        if ($config?->{$field} !== null) {
+                            $bundled[] = $file;
+                        }
+                    }
+
+                    $this->line($bundled === []
+                        ? 'No project config files found to bundle.'
+                        : 'Bundling project config: ' . implode(', ', $bundled));
+                }
+
+                $packager->pack($sessions, $outputPath, $config, $toolName, $encrypt ? $encryptor : null);
             }
         } catch (\Throwable $e) {
             $this->error('Export failed: ' . $e->getMessage());

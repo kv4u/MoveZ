@@ -6,6 +6,7 @@ namespace App\Commands;
 use App\DTOs\SessionDTO;
 use App\Services\Encryptor;
 use App\Services\Packager;
+use App\Services\ProjectConfigFiles;
 use App\Services\PathMapper;
 use App\Services\ToolDetector;
 use LaravelZero\Framework\Commands\Command;
@@ -18,7 +19,9 @@ class ImportCommand extends Command
                             {--project= : Target project path}
                             {--encrypted : Input .json file is AES-256-GCM encrypted (.cbz bundles are detected automatically)}
                             {--from-path= : Source project path (for path remapping)}
-                            {--to-path= : Target project path (for path remapping)}';
+                            {--to-path= : Target project path (for path remapping)}
+                            {--with-config : Restore bundled CLAUDE.md, AGENTS.md, .cursorrules and .mcp.json into --project}
+                            {--overwrite-config : With --with-config, replace config files that already exist}';
 
     protected $description = 'Import AI coding sessions from a bundle file';
 
@@ -70,6 +73,11 @@ class ImportCommand extends Command
         }
 
         $this->info("Imported {$sessions->count()} session(s) to {$toolName}");
+
+        if ($this->option('with-config')) {
+            $this->restoreConfig($inputPath, (string) $projectPath, $packager, $encryptor);
+        }
+
         return self::SUCCESS;
     }
 
@@ -91,5 +99,33 @@ class ImportCommand extends Command
         $list = array_key_exists('sessions', $data) && is_array($data['sessions']) ? $data['sessions'] : $data;
 
         return collect($list)->map(fn(array $s) => SessionDTO::fromArray($s));
+    }
+
+    private function restoreConfig(string $inputPath, string $projectPath, Packager $packager, Encryptor $encryptor): void
+    {
+        if (!in_array(strtolower(pathinfo($inputPath, PATHINFO_EXTENSION)), ['cbz', 'zip'], true)) {
+            $this->warn('Project config is only stored in .cbz bundles.');
+            return;
+        }
+
+        try {
+            $config = $packager->unpackConfig($inputPath, $encryptor);
+        } catch (\Throwable $e) {
+            $this->warn('Could not read project config: ' . $e->getMessage());
+            return;
+        }
+
+        if ($config === null) {
+            $this->line('Bundle has no project config.');
+            return;
+        }
+
+        $results = (new ProjectConfigFiles())->apply($config, $projectPath, (bool) $this->option('overwrite-config'));
+        foreach ($results as $file => $status) {
+            $this->line("  {$file}: {$status}");
+        }
+        if (in_array('kept existing', $results, true)) {
+            $this->line('Use --overwrite-config to replace existing files.');
+        }
     }
 }
