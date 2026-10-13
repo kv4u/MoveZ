@@ -3,12 +3,15 @@ declare(strict_types=1);
 
 namespace App\Commands;
 
+use App\Commands\Concerns\WritesJson;
 use App\Services\ToolDetector;
 use App\Support\ProjectFilter;
 use LaravelZero\Framework\Commands\Command;
 
 class ListCommand extends Command
 {
+    use WritesJson;
+
     protected $signature = 'list-sessions
                             {--tool= : Filter by specific tool}
                             {--project= : Only list sessions belonging to this project path}
@@ -52,10 +55,7 @@ class ListCommand extends Command
         }
 
         if ($asJson) {
-            $this->line(json_encode(
-                $allSessions->map(fn($s) => $s->toArray())->values()->all(),
-                JSON_PRETTY_PRINT
-            ));
+            $this->writeJson($allSessions->map(fn($s) => $s->toArray())->values()->all());
             return self::SUCCESS;
         }
 

@@ -55,7 +55,11 @@ export function getCliPath(): string {
   return 'movez'
 }
 
-function buildSpawnArgs(cliPath: string, args: string[]): { cmd: string; cmdArgs: string[] } {
+function buildSpawnArgs(cliPath: string, cliArgs: string[]): { cmd: string; cmdArgs: string[] } {
+  // Symfony Console enables colours when it sees terminal env vars (e.g. WT_SESSION)
+  // inherited from the user's shell, which put raw escape codes into the UI
+  const args = [...cliArgs, '--no-ansi']
+
   // .phar files must be run through PHP
   if (cliPath.toLowerCase().endsWith('.phar')) {
     const storedPhp = store.get('phpPath') as string | undefined

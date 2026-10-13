@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Commands;
 
+use App\Commands\Concerns\WritesJson;
 use App\DTOs\SessionDTO;
 use App\Parsers\ClaudeCodeParser;
 use App\Services\ToolDetector;
@@ -10,6 +11,8 @@ use LaravelZero\Framework\Commands\Command;
 
 class ShowCommand extends Command
 {
+    use WritesJson;
+
     protected $signature = 'show
                             {--tool= : Tool the session belongs to}
                             {--id= : Session id (from list-sessions)}
@@ -45,7 +48,7 @@ class ShowCommand extends Command
         }
 
         if ($this->option('json')) {
-            $this->line((string) json_encode($session->toArray(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            $this->writeJson($session->toArray());
             return self::SUCCESS;
         }
 

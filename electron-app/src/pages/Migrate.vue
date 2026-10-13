@@ -47,6 +47,11 @@ async function run() {
     running.value = false
     step.value = 5
   }
+
+  // Streamed lines can be cut off when the reply overtakes them; the result is complete
+  if (result.value?.output) {
+    logs.value = result.value.output.split('\n').filter(Boolean)
+  }
 }
 
 function reset() {

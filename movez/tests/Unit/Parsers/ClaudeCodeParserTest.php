@@ -72,3 +72,33 @@ it('maps reasoning_trace as null for standard turns', function (): void {
             ->toBeNull();
     });
 });
+
+it('skips injected, tool and thinking entries, and counts turns consistently', function (): void {
+    withTempDir(function (string $dir): void {
+        $entry = fn(array $e) => json_encode($e + ['timestamp' => '2026-01-15T10:00:00Z', 'cwd' => '/home/dev/app']);
+        file_put_contents($dir . '/s.jsonl', implode("\n", [
+            $entry(['type' => 'user', 'message' => ['role' => 'user', 'content' => 'Fix the build']]),
+            $entry(['type' => 'user', 'isMeta' => true, 'message' => ['role' => 'user', 'content' => [['type' => 'text', 'text' => 'Base directory for this skill: ...']]]]),
+            $entry(['type' => 'assistant', 'message' => ['role' => 'assistant', 'content' => [['type' => 'thinking', 'thinking' => 'hmm']]]]),
+            $entry(['type' => 'assistant', 'message' => ['role' => 'assistant', 'content' => [['type' => 'tool_use', 'name' => 'Bash', 'input' => []]]]]),
+            $entry(['type' => 'user', 'message' => ['role' => 'user', 'content' => [['type' => 'tool_result', 'content' => 'ok']]]]),
+            $entry(['type' => 'assistant', 'message' => ['role' => 'assistant', 'content' => [['type' => 'text', 'text' => 'Fixed it.']]]]),
+        ]) . "\n");
+
+        $parser = new class($dir) extends ClaudeCodeParser {
+            public function __construct(private string $fakePath) {}
+
+            public function getStoragePath(string $projectPath): string
+            {
+                return $this->fakePath;
+            }
+        };
+
+        $full = $parser->parse('/any')->first();
+        $meta = $parser->parseMetadata('/any')->first();
+
+        expect($full->turns->pluck('content')->all())->toBe(['Fix the build', 'Fixed it.'])
+            ->and($meta->turnCount())->toBe(2)
+            ->and($meta->title)->toBe('Fix the build');
+    });
+});

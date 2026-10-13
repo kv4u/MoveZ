@@ -5,6 +5,7 @@ import LogStream from '@/components/LogStream.vue'
 import ToolBadge from '@/components/ToolBadge.vue'
 
 import { READABLE_TOOLS, WRITABLE_TOOLS } from '@/tools'
+import type { TransferResult } from '@/types/bridge'
 
 const settingsStore = useSettingsStore()
 onMounted(() => settingsStore.load())
@@ -15,7 +16,7 @@ const fromPath  = ref('')
 const toPath    = ref('')
 const logs      = ref<string[]>([])
 const running   = ref(false)
-const lastResult = ref<{ success: boolean } | null>(null)
+const lastResult = ref<TransferResult | null>(null)
 
 async function run() {
   const { serverUrl, token } = settingsStore.settings
@@ -52,6 +53,11 @@ async function run() {
   } finally {
     off()
     running.value = false
+  }
+
+  // Streamed lines can be cut off when the reply overtakes them; the result is complete
+  if (lastResult.value?.output) {
+    logs.value = lastResult.value.output.split('\n').filter(Boolean)
   }
 }
 </script>

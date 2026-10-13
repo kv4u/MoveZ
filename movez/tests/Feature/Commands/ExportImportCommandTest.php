@@ -123,3 +123,21 @@ it('show returns a single session with its turns', function (): void {
             ->assertExitCode(1);
     });
 });
+
+it('json output is not mangled by the console formatter', function (): void {
+    withTempDir(function (string $dir): void {
+        $tricky = 'Escape \<b> and keep <info>styled</info> and <comment>tags</comment> verbatim';
+        seedClaudeSession($dir . '/claude', 'sess-x', '/work/alpha', $tricky);
+        config(["movez.tools.claude-code.storage.{$this->os}" => $dir . '/claude']);
+
+        foreach ([['show', ['--tool' => 'claude-code', '--id' => 'sess-x', '--json' => true]],
+                  ['list-sessions', ['--tool' => 'claude-code', '--json' => true]]] as [$command, $args]) {
+            \Illuminate\Support\Facades\Artisan::call($command, $args);
+            $decoded = json_decode(\Illuminate\Support\Facades\Artisan::output(), true);
+
+            expect($decoded)->toBeArray();
+            $session = $command === 'show' ? $decoded : $decoded[0];
+            expect($session['title'])->toBe($tricky);
+        }
+    });
+});
