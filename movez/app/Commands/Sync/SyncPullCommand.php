@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Commands\Sync;
 
+use App\Commands\Concerns\WritesJson;
 use App\Services\Encryptor;
 use App\Services\PathMapper;
 use App\Services\SyncClient;
@@ -12,6 +13,7 @@ use LaravelZero\Framework\Commands\Command;
 class SyncPullCommand extends Command
 {
     use ResolvesSyncCredentials;
+    use WritesJson;
 
     protected $signature = 'sync:pull
                             {--token= : API token (or MOVEZ_TOKEN env var, or ~/.movez/token)}
@@ -44,10 +46,7 @@ class SyncPullCommand extends Command
             }
 
             if (!$toolName) {
-                $this->line((string) json_encode(
-                    $sessions->map(fn($s) => $s->toArray())->values()->all(),
-                    JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
-                ));
+                $this->writeJson($sessions->map(fn($s) => $s->toArray())->values()->all());
                 return self::SUCCESS;
             }
 

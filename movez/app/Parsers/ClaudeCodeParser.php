@@ -71,8 +71,10 @@ class ClaudeCodeParser extends JsonlParser implements ParserInterface
             $sourceTool = $this->toolName(); // default: claude-code
 
             while (($line = fgets($fh)) !== false) {
-                // Fast turn count — no JSON decode needed
-                if (str_contains($line, '"type":"user"') || str_contains($line, '"type":"assistant"')) {
+                // Fast turn count — no JSON decode needed. Only lines that parse()
+                // turns into a turn count (not tool calls/results, thinking or injected text).
+                $isTurn = $this->isConversationLine($line);
+                if ($isTurn) {
                     $turnCount++;
                 }
 
@@ -94,7 +96,7 @@ class ClaudeCodeParser extends JsonlParser implements ParserInterface
                     }
 
                     // Grab createdAt + fallback title from first user message
-                    if ($createdAt === null && str_contains($line, '"type":"user"')) {
+                    if ($createdAt === null && $isTurn && str_contains($line, '"type":"user"')) {
                         $d         = json_decode($line, true);
                         $createdAt = Carbon::parse($d['timestamp'] ?? 'now');
                         $cwd       = is_string($d['cwd'] ?? null) ? $d['cwd'] : null;
@@ -198,6 +200,12 @@ class ClaudeCodeParser extends JsonlParser implements ParserInterface
                 continue;
             }
 
+            // Text Claude Code injects into the conversation (skill instructions,
+            // command output) is marked isMeta — it isn't something the user typed
+            if (($line['isMeta'] ?? false) === true) {
+                continue;
+            }
+
             if ($cwd === null && is_string($line['cwd'] ?? null)) {
                 $cwd = $line['cwd'];
             }
@@ -250,6 +258,30 @@ class ClaudeCodeParser extends JsonlParser implements ParserInterface
             turns:            $turns,
             project:          $project,
         );
+    }
+
+    /**
+     * Cheap string check, without decoding, for whether a raw JSONL line becomes a
+     * turn in parse(): a user/assistant entry with text, excluding tool results,
+     * tool-use/thinking-only assistant entries and isMeta injections.
+     */
+    private function isConversationLine(string $line): bool
+    {
+        if (!str_contains($line, '"type":"user"') && !str_contains($line, '"type":"assistant"')) {
+            return false;
+        }
+
+        // Claude Code writes one content block per line, so a tool call, tool result
+        // or thinking block marks the whole line. (Text that merely mentions these
+        // is JSON-escaped as \"type\" and can't match.)
+        foreach (['"isMeta":true', '"type":"tool_result"', '"type":"tool_use"', '"type":"thinking"'] as $marker) {
+            if (str_contains($line, $marker)) {
+                return false;
+            }
+        }
+
+        // Text blocks, or a plain string message ("content":"...")
+        return str_contains($line, '"type":"text"') || str_contains($line, '"content":"');
     }
 
     /**
