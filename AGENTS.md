@@ -163,9 +163,9 @@ Required keys validated by `BundleSchema::validate()`: `version`, `sessions`, `s
 | windsurf | Encrypted protobuf (Cascade) | not supported — parser/writer throw |
 | claude-code | JSONL | ~/.claude/projects/ |
 | codex | JSONL rollout (session_meta/response_item) | ~/.codex/sessions/YYYY/MM/DD/ |
-| copilot-cli | JSON | ~/.copilot/sessions/ |
+| copilot-cli | JSONL events (session.start, user.message, assistant.message) + workspace.yaml | ~/.copilot/session-state/<uuid>/ |
 | cline | JSON per task (read-only) | ~/.vscode/extensions/saoudrizwan.claude-dev-*/data/tasks/<id>/ |
-| continue | SQLite sessions.db (read-only) | ~/.continue/ |
+| continue | JSON per session + sessions.json index (read-only) | ~/.continue/sessions/ |
 
 ---
 

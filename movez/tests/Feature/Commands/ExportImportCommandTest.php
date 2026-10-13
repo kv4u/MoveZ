@@ -82,7 +82,7 @@ it('encrypted export round-trips with the same key', function (): void {
         $this->artisan('import', ['--input' => $dir . '/secret.cbz', '--tool' => 'copilot-cli'])
             ->assertExitCode(0);
 
-        expect(file_exists($dir . '/copilot/sess-a.json'))->toBeTrue();
+        expect(glob($dir . '/copilot/*/events.jsonl'))->toHaveCount(1);
     });
 });
 

@@ -114,9 +114,9 @@ Run `movez <command> --help` for details.
 | Cursor | ✅ | ✅ | `~/.cursor/projects` transcripts + `state.vscdb` |
 | Claude Code | ✅ | ✅ | `~/.claude/projects/*.jsonl` (+ Claude desktop app registry) |
 | Codex CLI | ✅ | ✅ | `~/.codex/sessions/YYYY/MM/DD/rollout-*.jsonl` |
-| Copilot CLI | ✅ | ✅ | `~/.copilot/sessions/*.json` |
+| Copilot CLI | ✅ | ✅ | `~/.copilot/session-state/<id>/events.jsonl` + `workspace.yaml` |
 | Cline | ✅ | — | VS Code extension `tasks/<id>/api_conversation_history.json` |
-| Continue | ✅ | — | `~/.continue/sessions.db` |
+| Continue | ✅ | — | `~/.continue/sessions/<id>.json` (honours `CONTINUE_GLOBAL_DIR`) |
 | Windsurf | — | — | Not supported yet: Cascade stores conversations in an encrypted format |
 
 ### Importing into Cursor
@@ -128,6 +128,10 @@ Cursor only shows sessions in its sidebar for workspaces it already knows about.
 3. Reopen Cursor. The imported chats appear in the history sidebar.
 
 MoveZ writes the transcript, the global `state.vscdb` entries and the workspace registration. The full conversation is visible, but Cursor's internal model context (`conversationState`) can't be recreated. To continue a conversation, start a new chat and reference the old one.
+
+### Importing into Copilot CLI
+
+Sessions are written to `~/.copilot/session-state/<uuid>/` (non-UUID ids get a stable UUID, so re-importing overwrites rather than duplicates). Copilot CLI also keeps a search index of sessions; if imported sessions don't show up in its history, run `/chronicle reindex` inside Copilot CLI.
 
 ### Importing into Claude Code
 
