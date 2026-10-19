@@ -42,6 +42,7 @@ Everything is on the [latest release](https://github.com/kv4u/MoveZ/releases/lat
 |---|---|---|
 | `MoveZ-Setup-<version>.exe` | Windows desktop app | Nothing, PHP and the CLI are bundled |
 | `MoveZ-<version>-mac-arm64.dmg` | macOS desktop app (Apple Silicon) | Nothing, PHP and the CLI are bundled |
+| `MoveZ-<version>-mac-x64.dmg` | macOS desktop app (Intel) | Nothing, PHP and the CLI are bundled |
 | `MoveZ-<version>-linux-x86_64.AppImage` | Linux desktop app (x86-64) | Nothing, PHP and the CLI are bundled |
 | `movez.phar` | CLI on macOS, Linux, Windows | PHP 8.2+ with `pdo_sqlite`, `openssl`, `zip`, `mbstring` |
 | `movez-vscode.vsix` | VS Code / Cursor extension | The CLI (above) |
@@ -174,7 +175,7 @@ Sessions are written under `~/.claude/projects/<encoded-path>/`. On Windows they
 ## Desktop app
 
 - **Windows:** run `MoveZ-Setup-<version>.exe`.
-- **macOS (Apple Silicon):** open the `.dmg` and drag MoveZ to Applications. The app isn't code-signed yet, so the first time right-click it and choose **Open**.
+- **macOS:** pick `mac-arm64` for Apple Silicon or `mac-x64` for Intel, open the `.dmg` and drag MoveZ to Applications. The app isn't code-signed yet, so the first time right-click it and choose **Open**.
 - **Linux:** `chmod +x MoveZ-*.AppImage`, then run it.
 
 Each build bundles PHP and the CLI. Launch **MoveZ**:
@@ -271,7 +272,7 @@ cd electron-app && npm run typecheck       # desktop app type check
 ## Roadmap
 
 - Windsurf support (blocked on its encrypted Cascade storage)
-- Code-signed macOS build and Intel Mac support
+- Code-signed macOS build
 
 ## License
 
