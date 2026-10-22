@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MoveZ — Move your AI coding sessions between tools and machines</title>
+  <meta name="description" content="MoveZ transfers AI coding conversations between Cursor, Claude Code, Codex, Copilot CLI, Cline and Continue, and between machines. Open source, encrypted, local-first.">
+  <meta name="theme-color" content="#4F46E5">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="MoveZ — Your AI coding sessions, anywhere">
+  <meta property="og:description" content="Transfer AI coding conversations between Cursor, Claude Code, Codex, Copilot CLI, Cline and Continue — and between machines.">
+  <meta property="og:image" content="https://kv4u.github.io/MoveZ/assets/social-card.png">
+  <meta property="og:url" content="https://kv4u.github.io/MoveZ/">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="#top" aria-label="MoveZ home">
+        <img src="assets/icon.svg" alt="" width="32" height="32">
+        <span>MoveZ</span>
+      </a>
+      <nav class="nav-links" aria-label="Main">
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#tools">Tools</a>
+        <a href="#download">Download</a>
+        <a href="https://github.com/kv4u/MoveZ#readme">Docs</a>
+      </nav>
+      <a class="btn btn-ghost btn-sm" href="https://github.com/kv4u/MoveZ">
+        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container hero-inner">
+        <p class="eyebrow"><span class="dot"></span> Open source · <span data-version>Latest release</span></p>
+        <h1>Your AI coding sessions,<br><span class="grad">anywhere you work.</span></h1>
+        <p class="lead">
+          MoveZ moves conversations between Cursor, Claude Code, Codex, Copilot&nbsp;CLI, Cline and Continue —
+          and between machines — so the context you built up with your AI assistant comes with you.
+        </p>
+        <div class="cta">
+          <a class="btn btn-primary" data-primary-download href="#download">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 3v12m0 0-4.5-4.5M12 15l4.5-4.5M4 19h16"/></svg>
+            <span data-primary-label>Download MoveZ</span>
+          </a>
+          <a class="btn btn-ghost" href="#how">See how it works</a>
+        </div>
+        <p class="fineprint" data-primary-note>Windows, macOS and Linux · CLI · VS Code extension · Free (MIT)</p>
+
+        <figure class="window hero-shot">
+          <div class="window-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+          <img src="screenshots/desktop-dashboard.png" width="1600" height="1000"
+               alt="The MoveZ desktop app showing 7 sessions detected across Cursor, Claude Code, Codex and Copilot">
+        </figure>
+      </div>
+    </section>
+
+    <!-- Tool strip -->
+    <section class="tools-strip" aria-label="Supported tools">
+      <div class="container">
+        <p>Works with the AI coding tools you already use</p>
+        <ul class="pills">
+          <li class="pill t-cursor">Cursor</li>
+          <li class="pill t-claude">Claude Code</li>
+          <li class="pill t-codex">Codex</li>
+          <li class="pill t-copilot">Copilot CLI</li>
+          <li class="pill t-cline">Cline</li>
+          <li class="pill t-continue">Continue</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="section">
+      <div class="container">
+        <h2 class="section-title">Everything you need to take your context with you</h2>
+        <p class="section-lead">Switching editors or laptops shouldn't mean starting every conversation from scratch.</p>
+        <div class="grid features">
+          <article class="card">
+            <div class="icon-tile" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg></div>
+            <h3>Transfer between tools</h3>
+            <p>Copy a session from Cursor into Claude Code, Codex or Copilot CLI in one step. MoveZ converts each tool's format for you.</p>
+          </article>
+          <article class="card">
+            <div class="icon-tile" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></div>
+            <h3>Move to a new machine</h3>
+            <p>Export to a portable <code>.cbz</code> bundle and import it anywhere. Project paths are remapped, so <code>D:\Projects</code> becomes <code>~/work</code>.</p>
+          </article>
+          <article class="card">
+            <div class="icon-tile" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+            <h3>Encrypted end to end</h3>
+            <p>Bundles and sync payloads are sealed with AES-256-GCM before they leave your machine. Your key never does.</p>
+          </article>
+          <article class="card">
+            <div class="icon-tile" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg></div>
+            <h3>Self-hosted sync</h3>
+            <p>Run your own sync server and push or pull sessions between machines. It only ever stores ciphertext.</p>
+          </article>
+          <article class="card">
+            <div class="icon-tile" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 3h7v7M21 3l-9 9M10 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/></svg></div>
+            <h3>Desktop, CLI or editor</h3>
+            <p>A desktop app for Windows, macOS and Linux, a single-file CLI, and a VS Code / Cursor extension. Use whichever fits.</p>
+          </article>
+          <article class="card">
+            <div class="icon-tile" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></div>
+            <h3>Project config comes too</h3>
+            <p>Optionally bundle <code>CLAUDE.md</code>, <code>AGENTS.md</code>, <code>.cursorrules</code> and <code>.mcp.json</code> so a new machine is ready to go.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section id="how" class="section section-alt">
+      <div class="container">
+        <h2 class="section-title">How it works</h2>
+        <p class="section-lead">Three steps, in the app or on the command line.</p>
+
+        <ol class="steps">
+          <li>
+            <span class="step-num">1</span>
+            <h3>Pick your sessions</h3>
+            <p>MoveZ finds the conversations every installed AI tool has stored on this machine.</p>
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <h3>Transfer or bundle</h3>
+            <p>Send them straight to another tool, or pack them into an encrypted <code>.cbz</code> for another machine.</p>
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <h3>Keep working</h3>
+            <p>Open the target tool — the full conversation history is there, under the right project.</p>
+          </li>
+        </ol>
+
+        <div class="split">
+          <figure class="window">
+            <div class="window-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+            <img src="screenshots/desktop-migrate.png" width="1600" height="718" loading="lazy"
+                 alt="The MoveZ migration wizard with Cursor as source and Claude Code selected as target">
+          </figure>
+          <div class="terminal" role="region" aria-label="CLI example">
+            <div class="terminal-bar"><span></span><span></span><span></span><em>terminal</em></div>
+<pre><code><span class="c"># copy Cursor sessions into Claude Code</span>
+<span class="p">$</span> movez transfer --from=cursor --to=claude-code
+<span class="ok">Transferred 2 session(s) from cursor to claude-code</span>
+
+<span class="c"># back up to an encrypted bundle</span>
+<span class="p">$</span> movez export --tool=claude-code --output=work.cbz --encrypt
+<span class="ok">Exported 3 session(s) to: work.cbz</span>
+
+<span class="c"># restore on the new laptop, fixing paths</span>
+<span class="p">$</span> movez key:import --file=movez.key
+<span class="p">$</span> movez import --input=work.cbz --tool=claude-code \
+    --from-path="D:/Projects" --to-path="~/work"
+<span class="ok">Imported 3 session(s) to claude-code</span></code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gallery -->
+    <section class="section">
+      <div class="container">
+        <h2 class="section-title">Every session, readable and searchable</h2>
+        <p class="section-lead">Browse what each tool has stored, read full conversations, and export any of them.</p>
+        <div class="gallery">
+          <figure class="window">
+            <div class="window-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+            <img src="screenshots/desktop-sessions.png" width="1600" height="1000" loading="lazy"
+                 alt="Sessions grouped by tool, with project names, turn counts and dates">
+            <figcaption>Sessions from every tool, grouped and searchable</figcaption>
+          </figure>
+          <figure class="window">
+            <div class="window-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+            <img src="screenshots/desktop-session.png" width="1600" height="1000" loading="lazy"
+                 alt="A full Claude Code conversation about adding rate limiting to an API gateway">
+            <figcaption>Full conversations, ready to export as <code>.cbz</code></figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- Supported tools -->
+    <section id="tools" class="section section-alt">
+      <div class="container narrow">
+        <h2 class="section-title">Supported tools</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Tool</th><th>Read</th><th>Write</th><th>Where it lives</th></tr></thead>
+            <tbody>
+              <tr><td><span class="pill t-cursor">Cursor</span></td><td class="yes">✓</td><td class="yes">✓</td><td><code>~/.cursor/projects</code> + <code>state.vscdb</code></td></tr>
+              <tr><td><span class="pill t-claude">Claude Code</span></td><td class="yes">✓</td><td class="yes">✓</td><td><code>~/.claude/projects/*.jsonl</code></td></tr>
+              <tr><td><span class="pill t-codex">Codex CLI</span></td><td class="yes">✓</td><td class="yes">✓</td><td><code>~/.codex/sessions/…/rollout-*.jsonl</code></td></tr>
+              <tr><td><span class="pill t-copilot">Copilot CLI</span></td><td class="yes">✓</td><td class="yes">✓</td><td><code>~/.copilot/session-state/&lt;id&gt;/</code></td></tr>
+              <tr><td><span class="pill t-cline">Cline</span></td><td class="yes">✓</td><td class="no">—</td><td>VS Code extension task history</td></tr>
+              <tr><td><span class="pill t-continue">Continue</span></td><td class="yes">✓</td><td class="no">—</td><td><code>~/.continue/sessions/*.json</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">Windsurf isn't supported yet: it stores Cascade conversations in an encrypted format.</p>
+      </div>
+    </section>
+
+    <!-- Privacy -->
+    <section class="section">
+      <div class="container privacy">
+        <div>
+          <h2 class="section-title left">Local-first. Private by design.</h2>
+          <p class="section-lead left">Your conversations are yours. MoveZ runs on your machine and talks to nothing you didn't configure.</p>
+        </div>
+        <ul class="checks">
+          <li><strong>No telemetry, no accounts.</strong> MoveZ makes no network calls except to a sync server you run yourself.</li>
+          <li><strong>AES-256-GCM encryption.</strong> Bundles and sync payloads are encrypted client-side; the server stores ciphertext only.</li>
+          <li><strong>Your key stays with you.</strong> It lives at <code>~/.movez/key</code> and only moves when you run <code>movez key:export</code>.</li>
+          <li><strong>Open source.</strong> MIT-licensed, with tests for every format it reads and writes.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Download -->
+    <section id="download" class="section section-alt">
+      <div class="container">
+        <h2 class="section-title">Download MoveZ</h2>
+        <p class="section-lead"><span data-version>The latest release</span> — free and open source.</p>
+        <div class="grid downloads">
+          <a class="card dl" data-asset="win" href="https://github.com/kv4u/MoveZ/releases/latest">
+            <span class="dl-os">Windows</span><span class="dl-file">Installer (.exe)</span><span class="dl-size" data-size></span>
+          </a>
+          <a class="card dl" data-asset="mac-arm64" href="https://github.com/kv4u/MoveZ/releases/latest">
+            <span class="dl-os">macOS · Apple Silicon</span><span class="dl-file">Disk image (.dmg)</span><span class="dl-size" data-size></span>
+          </a>
+          <a class="card dl" data-asset="mac-x64" href="https://github.com/kv4u/MoveZ/releases/latest">
+            <span class="dl-os">macOS · Intel</span><span class="dl-file">Disk image (.dmg)</span><span class="dl-size" data-size></span>
+          </a>
+          <a class="card dl" data-asset="linux" href="https://github.com/kv4u/MoveZ/releases/latest">
+            <span class="dl-os">Linux · x86-64</span><span class="dl-file">AppImage</span><span class="dl-size" data-size></span>
+          </a>
+          <a class="card dl" data-asset="phar" href="https://github.com/kv4u/MoveZ/releases/latest/download/movez.phar">
+            <span class="dl-os">Command line</span><span class="dl-file">movez.phar (PHP 8.2+)</span><span class="dl-size" data-size></span>
+          </a>
+          <a class="card dl" data-asset="vsix" href="https://github.com/kv4u/MoveZ/releases/latest/download/movez-vscode.vsix">
+            <span class="dl-os">VS Code / Cursor</span><span class="dl-file">Extension (.vsix)</span><span class="dl-size" data-size></span>
+          </a>
+        </div>
+        <p class="note">The desktop apps bundle PHP and the CLI. The macOS app isn't code-signed yet — the first time, right-click it and choose <strong>Open</strong>.</p>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section">
+      <div class="container narrow">
+        <h2 class="section-title">Questions</h2>
+        <div class="faq">
+          <details>
+            <summary>Does the AI remember the conversation after a transfer?</summary>
+            <p>You get the full conversation history in the target tool. Cursor also keeps an internal model state that can't be recreated, so there the history is visible but the model won't automatically pick it up — start a new chat and reference the old one.</p>
+          </details>
+          <details>
+            <summary>Do I need a server?</summary>
+            <p>No. Transfers and <code>.cbz</code> bundles work entirely offline. The self-hosted sync server is optional, for pushing and pulling between machines without copying files.</p>
+          </details>
+          <details>
+            <summary>How do I move my encryption key to another machine?</summary>
+            <p>Run <code>movez key:export</code> on the first machine and <code>movez key:import</code> on the next, or pipe one into the other over SSH. <code>movez key:fingerprint</code> confirms both machines hold the same key.</p>
+          </details>
+          <details>
+            <summary>Is it free?</summary>
+            <p>Yes. MoveZ is open source under the MIT license.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <a class="brand" href="#top"><img src="assets/icon.svg" alt="" width="24" height="24"><span>MoveZ</span></a>
+      <p>Open source under the MIT license.</p>
+      <nav aria-label="Footer">
+        <a href="https://github.com/kv4u/MoveZ">GitHub</a>
+        <a href="https://github.com/kv4u/MoveZ/releases">Releases</a>
+        <a href="https://github.com/kv4u/MoveZ/blob/main/docs/sync-server-setup.md">Sync server</a>
+        <a href="https://github.com/kv4u/MoveZ/issues">Issues</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>
