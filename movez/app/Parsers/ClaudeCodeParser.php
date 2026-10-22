@@ -73,7 +73,11 @@ class ClaudeCodeParser extends JsonlParser implements ParserInterface
             while (($line = fgets($fh)) !== false) {
                 // Fast turn count — no JSON decode needed. Only lines that parse()
                 // turns into a turn count (not tool calls/results, thinking or injected text).
-                $isTurn = $this->isConversationLine($line);
+                // Claude Code writes compact JSON; tolerate `"key": value` from other writers
+                $probe  = str_contains($line, '": ') || str_contains($line, '" :')
+                    ? (string) preg_replace('/"\s*:\s*/', '":', $line)
+                    : $line;
+                $isTurn = $this->isConversationLine($probe);
                 if ($isTurn) {
                     $turnCount++;
                 }
@@ -96,7 +100,7 @@ class ClaudeCodeParser extends JsonlParser implements ParserInterface
                     }
 
                     // Grab createdAt + fallback title from first user message
-                    if ($createdAt === null && $isTurn && str_contains($line, '"type":"user"')) {
+                    if ($createdAt === null && $isTurn && str_contains($probe, '"type":"user"')) {
                         $d         = json_decode($line, true);
                         $createdAt = Carbon::parse($d['timestamp'] ?? 'now');
                         $cwd       = is_string($d['cwd'] ?? null) ? $d['cwd'] : null;

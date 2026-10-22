@@ -102,3 +102,28 @@ it('skips injected, tool and thinking entries, and counts turns consistently', f
             ->and($meta->title)->toBe('Fix the build');
     });
 });
+
+it('lists transcripts written with spaced JSON ("type": "user")', function (): void {
+    withTempDir(function (string $dir): void {
+        // json_encode with JSON_PRETTY_PRINT-like spacing, as other tools may write it
+        $line = fn(string $role, string $text) => str_replace('":', '": ', json_encode([
+            'type' => $role, 'cwd' => '/home/dev/app',
+            'message' => ['role' => $role, 'content' => $role === 'user' ? $text : [['type' => 'text', 'text' => $text]]],
+            'timestamp' => '2026-01-15T10:00:00Z',
+        ]));
+        file_put_contents($dir . '/spaced.jsonl', $line('user', 'Fix the login') . "\n" . $line('assistant', 'Done.') . "\n");
+
+        $parser = new class($dir) extends ClaudeCodeParser {
+            public function __construct(private string $fakePath) {}
+
+            public function getStoragePath(string $projectPath): string
+            {
+                return $this->fakePath;
+            }
+        };
+
+        $meta = $parser->parseMetadata('/any')->first();
+        expect($meta->turnCount())->toBe(2)
+            ->and($meta->title)->toBe('Fix the login');
+    });
+});
