@@ -32,13 +32,13 @@ onMounted(run)
 <template>
   <div class="p-8 max-w-xl mx-auto">
     <div class="mb-8">
-      <h1 class="text-2xl font-bold text-slate-100 mb-1">Doctor</h1>
+      <h1 class="text-3xl font-light tracking-tight text-slate-100 mb-1">Doctor</h1>
       <p class="text-slate-500 text-sm">Verify system requirements for MoveZ</p>
     </div>
 
     <div
       v-if="done"
-      class="mb-5 px-4 py-3 rounded-lg text-sm font-medium"
+      class="mb-5 px-4 py-3 rounded-xl text-sm font-medium"
       :class="success ? 'bg-green-900/20 text-green-400 border border-green-700/30'
                       : 'bg-red-900/20 text-red-400 border border-red-700/30'"
     >
@@ -48,7 +48,7 @@ onMounted(run)
     <LogStream :lines="lines" title="Diagnostics" />
 
     <button
-      class="mt-5 px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm text-slate-300
+      class="mt-5 px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-sm text-slate-300
              hover:bg-slate-700 transition-colors disabled:opacity-50"
       :disabled="running"
       @click="run"

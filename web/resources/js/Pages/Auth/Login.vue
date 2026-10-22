@@ -4,6 +4,7 @@
   <div class="min-h-screen bg-gray-50 flex items-center justify-center px-4">
     <div class="w-full max-w-sm">
       <div class="text-center mb-8">
+        <img :src="'/favicon.svg'" alt="" class="mx-auto mb-3 h-14 w-14" />
         <h1 class="text-2xl font-bold text-gray-900">MoveZ</h1>
         <p class="text-sm text-gray-500">Sign in to your sync server</p>
       </div>

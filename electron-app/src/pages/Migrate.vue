@@ -68,7 +68,7 @@ function reset() {
 <template>
   <div class="p-8 max-w-xl mx-auto">
     <div class="mb-8">
-      <h1 class="text-2xl font-bold text-slate-100 mb-1">Migration Wizard</h1>
+      <h1 class="text-3xl font-light tracking-tight text-slate-100 mb-1">Migration Wizard</h1>
       <p class="text-slate-500 text-sm">Transfer sessions between AI tools</p>
     </div>
 
@@ -83,7 +83,7 @@ function reset() {
         >
           <div
             class="w-5 h-5 rounded-full flex items-center justify-center text-xs"
-            :class="step > i + 1 ? 'bg-brand-600 text-white'
+            :class="step > i + 1 ? 'bg-brand-600 text-ink'
                   : step === i + 1 ? 'bg-brand-600/30 text-brand-300 ring-1 ring-brand-500'
                   : 'bg-slate-800 text-slate-600'"
           >{{ i + 1 }}</div>
@@ -100,7 +100,7 @@ function reset() {
         <button
           v-for="tool in TOOLS"
           :key="tool"
-          class="p-3 rounded-xl border text-left transition-all"
+          class="p-3 rounded-2xl border text-left transition-all"
           :class="fromTool === tool
             ? 'border-brand-500 bg-brand-600/15'
             : 'border-slate-700 bg-slate-800/40 hover:border-slate-600'"
@@ -118,7 +118,7 @@ function reset() {
         <button
           v-for="tool in WRITABLE_TOOLS.filter(t => t !== fromTool)"
           :key="tool"
-          class="p-3 rounded-xl border text-left transition-all"
+          class="p-3 rounded-2xl border text-left transition-all"
           :class="toTool === tool
             ? 'border-brand-500 bg-brand-600/15'
             : 'border-slate-700 bg-slate-800/40 hover:border-slate-600'"
@@ -142,7 +142,7 @@ function reset() {
             v-model="fromPath"
             type="text"
             placeholder="/Users/old/projects/myapp"
-            class="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm text-slate-200
+            class="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-sm text-slate-200
                    placeholder-slate-600 focus:outline-none focus:border-brand-500"
           />
         </div>
@@ -152,7 +152,7 @@ function reset() {
             v-model="toPath"
             type="text"
             placeholder="/home/new/projects/myapp"
-            class="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm text-slate-200
+            class="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-sm text-slate-200
                    placeholder-slate-600 focus:outline-none focus:border-brand-500"
           />
         </div>
@@ -193,7 +193,7 @@ function reset() {
     <div class="flex items-center justify-between mt-8">
       <button
         v-if="step > 1 && step < 5"
-        class="px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-slate-200 transition-colors"
+        class="px-4 py-2 rounded-xl text-sm text-slate-400 hover:text-slate-200 transition-colors"
         @click="back"
       >
         ← Back
@@ -203,14 +203,14 @@ function reset() {
       <div class="flex gap-2">
         <button
           v-if="step === 5"
-          class="px-4 py-2 rounded-lg bg-slate-800 text-sm text-slate-300 hover:bg-slate-700 transition-colors"
+          class="px-4 py-2 rounded-xl bg-slate-800 text-sm text-slate-300 hover:bg-slate-700 transition-colors"
           @click="reset"
         >
           Start over
         </button>
         <button
           v-else-if="step === 4"
-          class="px-5 py-2 rounded-lg bg-brand-600 hover:bg-brand-500 text-sm font-medium text-white
+          class="px-5 py-2 rounded-full bg-brand-600 hover:bg-brand-500 text-sm font-semibold text-ink
                  transition-colors disabled:opacity-50"
           :disabled="running"
           @click="run"
@@ -219,7 +219,7 @@ function reset() {
         </button>
         <button
           v-else
-          class="px-5 py-2 rounded-lg bg-brand-600 hover:bg-brand-500 text-sm font-medium text-white
+          class="px-5 py-2 rounded-full bg-brand-600 hover:bg-brand-500 text-sm font-semibold text-ink
                  transition-colors disabled:opacity-50"
           :disabled="!canNext"
           @click="next"

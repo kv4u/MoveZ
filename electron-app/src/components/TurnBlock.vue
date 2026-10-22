@@ -13,7 +13,7 @@ const showDiffs = ref(false)
     <div
       class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5"
       :class="turn.role === 'user'
-        ? 'bg-brand-600 text-white'
+        ? 'bg-brand-600 text-ink'
         : 'bg-slate-700 text-slate-300'"
     >
       {{ turn.role === 'user' ? 'U' : 'AI' }}

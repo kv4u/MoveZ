@@ -136,7 +136,7 @@ const tools = ['all', ...READABLE_TOOLS]
 <template>
   <div class="p-8">
     <div class="mb-6">
-      <h1 class="text-2xl font-bold text-slate-100 mb-1">Sessions</h1>
+      <h1 class="text-3xl font-light tracking-tight text-slate-100 mb-1">Sessions</h1>
       <p class="text-slate-500 text-sm">Browse all detected AI sessions</p>
     </div>
 
@@ -145,9 +145,9 @@ const tools = ['all', ...READABLE_TOOLS]
       <button
         v-for="tool in tools"
         :key="tool"
-        class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+        class="px-3 py-1.5 rounded-xl text-xs font-medium transition-colors"
         :class="activeTool === tool
-          ? 'bg-brand-600 text-white'
+          ? 'bg-brand-600 text-ink'
           : 'bg-slate-800 text-slate-400 hover:text-slate-200'"
         @click="filterByTool(tool)"
       >
@@ -162,7 +162,7 @@ const tools = ['all', ...READABLE_TOOLS]
         v-model="sessions.filter"
         type="text"
         placeholder="Search sessions…"
-        class="flex-1 min-w-[180px] max-w-sm px-4 py-2 rounded-lg bg-slate-800 border border-slate-700
+        class="flex-1 min-w-[180px] max-w-sm px-4 py-2 rounded-xl bg-slate-800 border border-slate-700
                text-slate-200 text-sm placeholder-slate-600 focus:outline-none focus:border-brand-500 transition-colors"
       />
 
@@ -170,14 +170,14 @@ const tools = ['all', ...READABLE_TOOLS]
       <template v-if="selected.size > 0">
         <span class="text-xs text-slate-400">{{ selected.size }} selected</span>
         <button
-          class="px-3 py-2 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-xs font-medium transition-colors disabled:opacity-50"
+          class="px-3 py-2 rounded-full bg-brand-600 hover:bg-brand-500 text-ink text-xs font-semibold transition-colors disabled:opacity-50"
           :disabled="exporting"
           @click="bundleSelected"
         >
           {{ exporting ? 'Exporting…' : 'Bundle to .cbz' }}
         </button>
         <button
-          class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs transition-colors"
+          class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs transition-colors"
           @click="clearSelection"
         >
           Clear
@@ -185,13 +185,13 @@ const tools = ['all', ...READABLE_TOOLS]
       </template>
       <template v-else>
         <button
-          class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs transition-colors"
+          class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs transition-colors"
           @click="selectAll"
         >
           Select All
         </button>
         <button
-          class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-brand-400 text-xs font-medium transition-colors"
+          class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-brand-400 text-xs font-medium transition-colors"
           @click="pickImportFile"
         >
           Import .cbz
@@ -200,7 +200,7 @@ const tools = ['all', ...READABLE_TOOLS]
     </div>
 
     <!-- Import .cbz panel -->
-    <div v-if="showImport" class="mb-5 p-4 rounded-xl bg-slate-800 border border-slate-700 space-y-3">
+    <div v-if="showImport" class="mb-5 p-4 rounded-2xl bg-slate-800 border border-slate-700 space-y-3">
       <div class="flex items-center justify-between">
         <span class="text-sm font-semibold text-slate-200">Import bundle</span>
         <button class="text-slate-500 hover:text-slate-300 text-xs" @click="cancelImport">✕ Cancel</button>
@@ -213,7 +213,7 @@ const tools = ['all', ...READABLE_TOOLS]
           <button
             v-for="tool in WRITABLE_TOOLS"
             :key="tool"
-            class="p-2 rounded-lg border text-left transition-all"
+            class="p-2 rounded-xl border text-left transition-all"
             :class="importTool === tool
               ? 'border-brand-500 bg-brand-600/15'
               : 'border-slate-700 bg-slate-800/40 hover:border-slate-600'"
@@ -228,20 +228,20 @@ const tools = ['all', ...READABLE_TOOLS]
         <div>
           <label class="block text-xs text-slate-400 mb-1">Old path (optional)</label>
           <input v-model="importFromPath" type="text" placeholder="e.g. C:\old\projects"
-            class="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-200
+            class="w-full px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-200
                    placeholder-slate-600 focus:outline-none focus:border-brand-500" />
         </div>
         <div>
           <label class="block text-xs text-slate-400 mb-1">New path (optional)</label>
           <input v-model="importToPath" type="text" placeholder="e.g. C:\new\projects"
-            class="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-200
+            class="w-full px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-200
                    placeholder-slate-600 focus:outline-none focus:border-brand-500" />
         </div>
       </div>
 
       <div class="flex items-center gap-3">
         <button
-          class="px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-xs font-medium transition-colors disabled:opacity-50"
+          class="px-4 py-2 rounded-full bg-brand-600 hover:bg-brand-500 text-ink text-xs font-semibold transition-colors disabled:opacity-50"
           :disabled="!importTool || importing"
           @click="runImport"
         >
@@ -254,13 +254,13 @@ const tools = ['all', ...READABLE_TOOLS]
     </div>
 
     <!-- Export result message -->
-    <div v-if="exportMsg" class="mb-4 px-4 py-2 rounded-lg bg-slate-800 text-xs text-slate-300">
+    <div v-if="exportMsg" class="mb-4 px-4 py-2 rounded-xl bg-slate-800 text-xs text-slate-300">
       {{ exportMsg }}
     </div>
 
     <!-- Loading / Error -->
     <div v-if="sessions.loading" class="py-12 text-center text-slate-500 text-sm">Loading sessions…</div>
-    <div v-else-if="sessions.error" class="py-4 px-4 bg-red-900/20 rounded-lg text-red-400 text-sm">{{ sessions.error }}</div>
+    <div v-else-if="sessions.error" class="py-4 px-4 bg-red-900/20 rounded-xl text-red-400 text-sm">{{ sessions.error }}</div>
 
     <!-- Grid -->
     <template v-else>
@@ -269,7 +269,7 @@ const tools = ['all', ...READABLE_TOOLS]
           <div v-if="list.length" class="mb-6">
             <div class="flex items-center gap-2 mb-3">
               <ToolBadge :tool="tool" />
-              <span class="text-xs text-slate-500">{{ list.length }} sessions</span>
+              <span class="text-xs text-slate-500">{{ list.length }} {{ list.length === 1 ? 'session' : 'sessions' }}</span>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               <SessionCard

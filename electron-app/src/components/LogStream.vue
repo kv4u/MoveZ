@@ -13,7 +13,7 @@ watch(() => props.lines.length, async () => {
 </script>
 
 <template>
-  <div class="rounded-lg border border-slate-700 overflow-hidden">
+  <div class="rounded-xl border border-slate-700 overflow-hidden">
     <div v-if="title" class="px-3 py-2 bg-slate-800 border-b border-slate-700 text-xs text-slate-400">
       {{ title }}
     </div>

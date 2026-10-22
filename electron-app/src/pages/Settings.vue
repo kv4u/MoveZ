@@ -39,7 +39,7 @@ async function browsePhpPath() {
 <template>
   <div class="p-8 max-w-lg mx-auto">
     <div class="mb-8">
-      <h1 class="text-2xl font-bold text-slate-100 mb-1">Settings</h1>
+      <h1 class="text-3xl font-light tracking-tight text-slate-100 mb-1">Settings</h1>
       <p class="text-slate-500 text-sm">Configure the CLI path and sync server</p>
     </div>
 
@@ -52,11 +52,11 @@ async function browsePhpPath() {
             v-model="form.cliPath"
             type="text"
             placeholder="movez"
-            class="flex-1 px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm text-slate-200
+            class="flex-1 px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-sm text-slate-200
                    placeholder-slate-600 focus:outline-none focus:border-brand-500"
           />
           <button
-            class="px-3 py-2 rounded-lg bg-slate-700 border border-slate-600 text-sm text-slate-300
+            class="px-3 py-2 rounded-xl bg-slate-700 border border-slate-600 text-sm text-slate-300
                    hover:bg-slate-600 transition-colors"
             @click="browseCliPath"
           >
@@ -79,11 +79,11 @@ async function browsePhpPath() {
             v-model="form.phpPath"
             type="text"
             placeholder="php  (uses the bundled PHP)"
-            class="flex-1 px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm text-slate-200
+            class="flex-1 px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-sm text-slate-200
                    placeholder-slate-600 focus:outline-none focus:border-brand-500"
           />
           <button
-            class="px-3 py-2 rounded-lg bg-slate-700 border border-slate-600 text-sm text-slate-300
+            class="px-3 py-2 rounded-xl bg-slate-700 border border-slate-600 text-sm text-slate-300
                    hover:bg-slate-600 transition-colors"
             @click="browsePhpPath"
           >
@@ -104,7 +104,7 @@ async function browsePhpPath() {
           v-model="form.serverUrl"
           type="url"
           placeholder="https://your-sync-server.com"
-          class="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm text-slate-200
+          class="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-sm text-slate-200
                  placeholder-slate-600 focus:outline-none focus:border-brand-500"
         />
         <p class="text-xs text-slate-600 mt-1">Leave blank to disable sync features</p>
@@ -117,7 +117,7 @@ async function browsePhpPath() {
           v-model="form.token"
           type="password"
           placeholder="Your sync server API token"
-          class="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm text-slate-200
+          class="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-sm text-slate-200
                  placeholder-slate-600 focus:outline-none focus:border-brand-500"
           autocomplete="off"
         />
@@ -148,7 +148,7 @@ async function browsePhpPath() {
     <!-- Save -->
     <div class="mt-8 flex items-center gap-3">
       <button
-        class="px-5 py-2 rounded-lg bg-brand-600 hover:bg-brand-500 text-sm font-medium text-white
+        class="px-5 py-2 rounded-full bg-brand-600 hover:bg-brand-500 text-sm font-semibold text-ink
                transition-colors disabled:opacity-50"
         :disabled="saving"
         @click="save"

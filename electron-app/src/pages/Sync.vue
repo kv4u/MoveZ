@@ -65,28 +65,28 @@ async function run() {
 <template>
   <div class="p-8 max-w-xl mx-auto">
     <div class="mb-8">
-      <h1 class="text-2xl font-bold text-slate-100 mb-1">Sync</h1>
+      <h1 class="text-3xl font-light tracking-tight text-slate-100 mb-1">Sync</h1>
       <p class="text-slate-500 text-sm">Push/pull sessions via encrypted sync server</p>
     </div>
 
     <!-- Config check -->
     <div
       v-if="!settingsStore.settings.serverUrl || !settingsStore.settings.token"
-      class="mb-6 px-4 py-3 rounded-lg bg-yellow-900/20 border border-yellow-700/30 text-yellow-400 text-sm"
+      class="mb-6 px-4 py-3 rounded-xl bg-yellow-900/20 border border-yellow-700/30 text-yellow-400 text-sm"
     >
       Configure server URL and token in <strong>Settings</strong> first.
     </div>
 
     <!-- Mode toggle -->
-    <div class="flex rounded-lg overflow-hidden border border-slate-700 mb-6 w-fit">
+    <div class="flex p-1 gap-1 rounded-full border border-slate-800 bg-slate-900 mb-6 w-fit">
       <button
-        class="px-5 py-2 text-sm font-medium transition-colors"
-        :class="mode === 'push' ? 'bg-brand-600 text-white' : 'text-slate-400 hover:text-slate-200'"
+        class="px-5 py-2 rounded-full text-sm font-semibold transition-colors"
+        :class="mode === 'push' ? 'bg-brand-600 text-ink' : 'text-slate-400 hover:text-slate-200'"
         @click="mode = 'push'"
       >↑ Push</button>
       <button
-        class="px-5 py-2 text-sm font-medium transition-colors"
-        :class="mode === 'pull' ? 'bg-brand-600 text-white' : 'text-slate-400 hover:text-slate-200'"
+        class="px-5 py-2 rounded-full text-sm font-semibold transition-colors"
+        :class="mode === 'pull' ? 'bg-brand-600 text-ink' : 'text-slate-400 hover:text-slate-200'"
         @click="mode = 'pull'"
       >↓ Pull</button>
     </div>
@@ -101,7 +101,7 @@ async function run() {
           <button
             v-for="t in (mode === 'push' ? READABLE_TOOLS : WRITABLE_TOOLS)"
             :key="t"
-            class="p-2 rounded-lg border text-left transition-all"
+            class="p-2 rounded-xl border text-left transition-all"
             :class="tool === t
               ? 'border-brand-500 bg-brand-600/15'
               : 'border-slate-700 bg-slate-800/40 hover:border-slate-600'"
@@ -119,7 +119,7 @@ async function run() {
             v-model="fromPath"
             type="text"
             placeholder="/old/machine/project"
-            class="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm text-slate-200
+            class="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-sm text-slate-200
                    placeholder-slate-600 focus:outline-none focus:border-brand-500"
           />
         </div>
@@ -129,7 +129,7 @@ async function run() {
             v-model="toPath"
             type="text"
             placeholder="/new/machine/project"
-            class="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm text-slate-200
+            class="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-sm text-slate-200
                    placeholder-slate-600 focus:outline-none focus:border-brand-500"
           />
         </div>
@@ -138,7 +138,7 @@ async function run() {
 
     <!-- Run button -->
     <button
-      class="w-full py-2.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-sm font-medium text-white
+      class="w-full py-2.5 rounded-full bg-brand-600 hover:bg-brand-500 text-sm font-semibold text-ink
              transition-colors disabled:opacity-50 mb-5"
       :disabled="running"
       @click="run"
@@ -149,7 +149,7 @@ async function run() {
     <!-- Status -->
     <div
       v-if="lastResult"
-      class="mb-4 px-4 py-2 rounded-lg text-sm font-medium"
+      class="mb-4 px-4 py-2 rounded-xl text-sm font-medium"
       :class="lastResult.success ? 'bg-green-900/20 text-green-400' : 'bg-red-900/20 text-red-400'"
     >
       {{ lastResult.success ? 'Success' : 'Failed' }}
