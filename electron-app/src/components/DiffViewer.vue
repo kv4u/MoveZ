@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import Icon from './Icon.vue'
 
 const props = defineProps<{ file: string; diff: string }>()
 
@@ -15,9 +16,9 @@ const lines = computed(() =>
 </script>
 
 <template>
-  <div class="rounded-lg border border-slate-700 overflow-hidden text-xs font-mono">
+  <div class="rounded-xl border border-slate-700 overflow-hidden text-xs font-mono">
     <div class="px-3 py-2 bg-slate-800 border-b border-slate-700 flex items-center gap-2">
-      <span class="text-slate-400">📄</span>
+      <Icon name="file" :size="14" class="text-slate-500" />
       <span class="text-slate-300">{{ file }}</span>
     </div>
     <div class="overflow-x-auto max-h-64 overflow-y-auto bg-slate-900">

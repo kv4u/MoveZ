@@ -65,13 +65,13 @@ async function exportSession() {
     </button>
 
     <div v-if="loading" class="py-12 text-center text-slate-500 text-sm">Loading…</div>
-    <div v-else-if="error" class="py-4 px-4 bg-red-900/20 rounded-lg text-red-400 text-sm">{{ error }}</div>
+    <div v-else-if="error" class="py-4 px-4 bg-red-900/20 rounded-xl text-red-400 text-sm">{{ error }}</div>
 
     <template v-else-if="session">
       <!-- Header -->
       <div class="flex items-start justify-between gap-4 mb-6">
         <div>
-          <h1 class="text-xl font-bold text-slate-100 mb-2">{{ session.title || 'Untitled Session' }}</h1>
+          <h1 class="text-2xl font-light tracking-tight text-slate-100 mb-3">{{ session.title || 'Untitled Session' }}</h1>
           <div class="flex items-center gap-3">
             <ToolBadge :tool="session.source_tool" />
             <span class="text-xs text-slate-500">
@@ -80,7 +80,7 @@ async function exportSession() {
           </div>
         </div>
         <button
-          class="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm text-slate-300
+          class="px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-sm text-slate-300
                  hover:border-brand-500/50 hover:text-brand-300 transition-colors shrink-0"
           @click="exportSession"
         >
