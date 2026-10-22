@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
+  <!-- Single-colour MoveZ mark (the "Z" transfer path) for monochrome contexts such as the VS Code activity bar -->
+  <path d="M5 5.5h11.5L7 17h5.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M12.5 14 L19 17 L12.5 20 Z" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+</svg>

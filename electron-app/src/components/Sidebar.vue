@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import logo from '@/assets/logo.png'
 import { RouterLink, useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -21,9 +22,7 @@ const bottom = [
     <!-- Logo -->
     <div class="px-5 py-5 border-b border-slate-800">
       <div class="flex items-center gap-2.5">
-        <div class="w-7 h-7 rounded-lg bg-brand-600 flex items-center justify-center text-sm font-bold text-white">
-          MZ
-        </div>
+        <img :src="logo" alt="" class="w-7 h-7" />
         <span class="font-semibold text-sm text-slate-100 tracking-wide">MoveZ</span>
       </div>
     </div>

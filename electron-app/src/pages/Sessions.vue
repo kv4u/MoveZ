@@ -269,7 +269,7 @@ const tools = ['all', ...READABLE_TOOLS]
           <div v-if="list.length" class="mb-6">
             <div class="flex items-center gap-2 mb-3">
               <ToolBadge :tool="tool" />
-              <span class="text-xs text-slate-500">{{ list.length }} sessions</span>
+              <span class="text-xs text-slate-500">{{ list.length }} {{ list.length === 1 ? 'session' : 'sessions' }}</span>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               <SessionCard

@@ -67,7 +67,7 @@ function handleClick(e: MouseEvent) {
       {{ session.project }}
     </div>
     <div class="flex items-center gap-4 text-xs text-slate-500">
-      <span>{{ session.turn_count ?? 0 }} turns</span>
+      <span>{{ session.turn_count ?? 0 }} {{ session.turn_count === 1 ? 'turn' : 'turns' }}</span>
       <span>{{ date }}</span>
     </div>
   </div>

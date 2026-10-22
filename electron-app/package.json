@@ -67,7 +67,7 @@
       "target": [
         "dmg"
       ],
-      "icon": "resources/icon-512.png",
+      "icon": "resources/icon-1024.png",
       "category": "public.app-category.developer-tools",
       "artifactName": "MoveZ-${version}-mac-${arch}.${ext}",
       "identity": null
@@ -76,7 +76,7 @@
       "target": [
         "AppImage"
       ],
-      "icon": "resources/icon-512.png",
+      "icon": "resources/icon-1024.png",
       "category": "Development",
       "artifactName": "MoveZ-${version}-linux-x86_64.${ext}"
     }
