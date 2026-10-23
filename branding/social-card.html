@@ -3,42 +3,42 @@
 <html>
 <head>
 <meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;600;700&display=swap">
 <style>
   html, body { margin: 0; width: 1280px; height: 640px; }
   body {
-    font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
-    color: #e6e9f5; overflow: hidden; position: relative;
-    background: #070912;
+    font-family: "Manrope", "Segoe UI", system-ui, sans-serif;
+    color: #f4f4f2; overflow: hidden; position: relative;
+    background: #0b0b0c;
   }
-  .glow { position: absolute; inset: 0;
+  /* The website's slate-to-sand hero panel */
+  .panel { position: absolute; inset: 28px; border-radius: 40px; overflow: hidden;
     background:
-      radial-gradient(40% 60% at 22% 30%, rgb(99 102 241 / .45), transparent 70%),
-      radial-gradient(40% 60% at 80% 20%, rgb(139 92 246 / .40), transparent 70%),
-      radial-gradient(35% 50% at 65% 95%, rgb(34 211 238 / .18), transparent 70%); }
-  .content { position: absolute; inset: 0; padding: 84px 96px; display: flex; flex-direction: column; }
-  .brand { display: flex; align-items: center; gap: 22px; font-size: 44px; font-weight: 700; letter-spacing: -0.01em; }
-  .brand img { width: 96px; height: 96px; }
-  h1 { font-size: 66px; line-height: 1.06; letter-spacing: -0.035em; margin: 54px 0 22px; max-width: 1000px; }
-  .grad { background: linear-gradient(100deg, #818cf8, #a78bfa 45%, #22d3ee); -webkit-background-clip: text; color: transparent; }
-  p { font-size: 28px; color: #98a2c3; margin: 0; }
-  .pills { display: flex; gap: 12px; margin-top: auto; }
-  .pill { padding: 8px 18px; border-radius: 999px; font-size: 22px; font-weight: 600; border: 1px solid; }
-  .a { color: #c4b5fd; border-color: rgb(167 139 250 / .4); background: rgb(167 139 250 / .14); }
-  .b { color: #fdba74; border-color: rgb(251 146 60 / .4); background: rgb(251 146 60 / .14); }
-  .c { color: #6ee7b7; border-color: rgb(52 211 153 / .4); background: rgb(52 211 153 / .14); }
-  .d { color: #93c5fd; border-color: rgb(96 165 250 / .4); background: rgb(96 165 250 / .14); }
-  .e { color: #fde047; border-color: rgb(250 204 21 / .4); background: rgb(250 204 21 / .14); }
-  .f { color: #f9a8d4; border-color: rgb(244 114 182 / .4); background: rgb(244 114 182 / .14); }
+      radial-gradient(120% 80% at 85% 110%, #d8c4a3 0%, rgba(216,196,163,0) 55%),
+      radial-gradient(90% 70% at 10% 100%, #8a8f86 0%, rgba(138,143,134,0) 60%),
+      linear-gradient(180deg, #1f2b30 0%, #34474c 45%, #8b8a7c 80%, #c8b596 100%); }
+  .panel svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .panel path { fill: none; stroke: rgba(255,255,255,.5); stroke-width: 1.5; }
+  .content { position: absolute; inset: 28px; padding: 64px 80px; display: flex; flex-direction: column; }
+  .brand { display: flex; align-items: center; gap: 18px; font-size: 36px; font-weight: 700; letter-spacing: -0.01em; }
+  .brand img { width: 72px; height: 72px; }
+  h1 { font-weight: 300; font-size: 84px; line-height: 1.02; letter-spacing: -0.045em; margin: 48px 0 0; max-width: 900px; }
+  .pills { display: flex; gap: 10px; margin-top: auto; }
+  .pill { padding: 8px 18px; border-radius: 999px; font-size: 21px; font-weight: 600; color: #111;
+          background: #e8e8e6; }
+  .b { background: #e7b68f; } .c { background: #a9d4c4; } .d { background: #b8bff0; }
+  .e { background: #eeeaa2; } .f { background: #c9b6e6; }
 </style>
 </head>
 <body>
-  <div class="glow"></div>
+  <div class="panel">
+    <svg viewBox="0 0 1224 584" preserveAspectRatio="none"><path d="M560 600 C 760 540, 880 420, 1000 350 S 1160 210, 1240 100"/></svg>
+  </div>
   <div class="content">
     <div class="brand"><img src="icon.svg" alt="">MoveZ</div>
-    <h1>Your AI coding sessions,<br><span class="grad">anywhere you work.</span></h1>
-    <p>Move conversations between tools and machines. Open source, encrypted, local-first.</p>
+    <h1>Your AI coding sessions, anywhere you work.</h1>
     <div class="pills">
-      <span class="pill a">Cursor</span><span class="pill b">Claude Code</span><span class="pill c">Codex</span>
+      <span class="pill">Cursor</span><span class="pill b">Claude Code</span><span class="pill c">Codex</span>
       <span class="pill d">Copilot CLI</span><span class="pill e">Cline</span><span class="pill f">Continue</span>
     </div>
   </div>

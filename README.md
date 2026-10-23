@@ -10,9 +10,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/kv4u/MoveZ/releases/latest"><img src="https://img.shields.io/github/v/release/kv4u/MoveZ?sort=semver&label=release&color=6366f1" alt="Latest release"></a>
+  <a href="https://github.com/kv4u/MoveZ/releases/latest"><img src="https://img.shields.io/github/v/release/kv4u/MoveZ?sort=semver&label=release&color=e6e18c" alt="Latest release"></a>
   <a href="https://github.com/kv4u/MoveZ/actions/workflows/ci.yml"><img src="https://github.com/kv4u/MoveZ/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <img src="https://img.shields.io/badge/platforms-Windows%20%7C%20macOS%20%7C%20Linux-6366f1" alt="Windows, macOS and Linux">
+  <img src="https://img.shields.io/badge/platforms-Windows%20%7C%20macOS%20%7C%20Linux-e6e18c" alt="Windows, macOS and Linux">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-22c55e" alt="MIT license"></a>
 </p>
 
