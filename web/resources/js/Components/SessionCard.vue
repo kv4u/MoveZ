@@ -1,20 +1,20 @@
 <template>
   <Link
     :href="`/sessions/${session.id}`"
-    class="block rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all group"
+    class="block rounded-3xl border border-line bg-surface p-4 hover:bg-surface-2 hover:border-line-2 transition-all group"
   >
     <div class="flex items-start justify-between gap-3">
       <div class="min-w-0 flex-1">
-        <p class="truncate font-semibold text-gray-900 group-hover:text-indigo-700">
+        <p class="truncate font-semibold text-gray-100 group-hover:text-accent">
           {{ session.title }}
         </p>
-        <p class="mt-1 text-xs text-gray-500">
+        <p class="mt-1 text-xs text-gray-400">
           Last active: {{ formatDate(session.exported_at ?? session.created_at) }}
         </p>
       </div>
       <ToolBadge :tool="session.source_tool" />
     </div>
-    <div class="mt-3 flex items-center gap-4 text-xs text-gray-400">
+    <div class="mt-3 flex items-center gap-4 text-xs text-gray-500">
       <span>Session {{ session.session_id?.substring(0, 8) }}</span>
     </div>
   </Link>

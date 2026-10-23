@@ -1,5 +1,5 @@
 <template>
-  <pre class="text-xs leading-relaxed overflow-x-auto rounded-md bg-gray-900 text-gray-200 p-4 font-mono"><template
+  <pre class="text-xs leading-relaxed overflow-x-auto rounded-lg bg-canvas text-gray-200 p-4 font-mono"><template
     v-for="(line, i) in lines"
     :key="i"
   ><span :class="lineClass(line)">{{ line }}</span>
@@ -16,7 +16,7 @@ const lines = computed(() => props.diff.split('\n'));
 function lineClass(line: string): string {
   if (line.startsWith('+')) return 'text-green-400';
   if (line.startsWith('-')) return 'text-red-400';
-  if (line.startsWith('@@')) return 'text-blue-400';
+  if (line.startsWith('@@')) return 'text-accent';
   return 'text-gray-300';
 }
 </script>

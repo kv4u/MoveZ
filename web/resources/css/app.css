@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/manrope';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -7,7 +8,46 @@
 @source '../**/*.ts';
 @source '../**/*.vue';
 
+/* Dark, neutral palette shared with the website and desktop app */
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Manrope Variable', 'Manrope', ui-sans-serif, system-ui, sans-serif;
+
+    --color-gray-50: #fafaf8;
+    --color-gray-100: #f4f4f2;
+    --color-gray-200: #dcdcd9;
+    --color-gray-300: #b8b8b9;
+    --color-gray-400: #8d8d92;
+    --color-gray-500: #6b6b70;
+    --color-gray-600: #47474b;
+    --color-gray-700: #2e2e32;
+    --color-gray-800: #1b1b1d;
+    --color-gray-900: #121213;
+    --color-gray-950: #0b0b0c;
+
+    --color-canvas: #0b0b0c;
+    --color-surface: #141415;
+    --color-surface-2: #1b1b1d;
+    --color-line: #242427;
+    --color-line-2: #2e2e32;
+    --color-accent: #eeeaa2;
+    --color-accent-hover: #f6f3bb;
+    --color-ink: #141410;
+}
+
+@layer base {
+    html {
+        color-scheme: dark;
+        background: var(--color-canvas);
+        color: var(--color-gray-100);
+    }
+    code, pre, .font-mono {
+        font-variant-ligatures: none;
+    }
+}
+
+/* Soft slate-to-sand gradient used for the dashboard's summary card */
+.hero-gradient {
+    background:
+        radial-gradient(120% 90% at 90% 120%, #d8c4a3 0%, rgb(216 196 163 / 0) 55%),
+        linear-gradient(160deg, #1f2b30 0%, #34474c 50%, #8b8a7c 90%, #b8a88c 100%);
 }
