@@ -6,16 +6,16 @@
         :href="link.url"
         preserve-scroll
         :class="[
-          'min-w-9 rounded-md border px-3 py-1.5 text-center text-sm transition-colors',
+          'min-w-9 rounded-lg border px-3 py-1.5 text-center text-sm transition-colors',
           link.active
-            ? 'border-indigo-600 bg-indigo-600 text-white'
-            : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300',
+            ? 'border-accent bg-accent text-ink'
+            : 'border-line bg-surface text-gray-200 hover:border-line-2',
         ]"
         :aria-current="link.active ? 'page' : undefined"
       >
         {{ label(link.label) }}
       </Link>
-      <span v-else class="min-w-9 rounded-md px-3 py-1.5 text-center text-sm text-gray-300">
+      <span v-else class="min-w-9 rounded-lg px-3 py-1.5 text-center text-sm text-gray-600">
         {{ label(link.label) }}
       </span>
     </template>

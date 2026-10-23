@@ -19,15 +19,15 @@ const props = defineProps<{
 }>();
 
 const dotClass = computed(() => ({
-  'bg-green-500': props.status === 'synced',
-  'bg-yellow-400': props.status === 'pending',
+  'bg-green-400': props.status === 'synced',
+  'bg-accent': props.status === 'pending',
   'bg-red-500':   props.status === 'error',
 }));
 
 const textClass = computed(() => ({
-  'text-green-700': props.status === 'synced',
-  'text-yellow-700': props.status === 'pending',
-  'text-red-700':   props.status === 'error',
+  'text-green-300': props.status === 'synced',
+  'text-yellow-200': props.status === 'pending',
+  'text-red-300':   props.status === 'error',
 }));
 
 const lastSyncFormatted = computed(() => {
