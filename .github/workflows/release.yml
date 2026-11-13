@@ -18,7 +18,7 @@ jobs:
     name: Build CLI PHAR
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -40,7 +40,7 @@ jobs:
           php builds/movez.phar --version
           php builds/movez.phar list --raw | grep -q '^export'
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: movez-phar
           path: movez/builds/movez.phar
@@ -49,9 +49,9 @@ jobs:
     name: Build VS Code Extension
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "22"
           cache: npm
@@ -70,7 +70,7 @@ jobs:
         working-directory: vscode-extension
         run: npx vsce package --no-dependencies --out movez-vscode.vsix
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: movez-vsix
           path: vscode-extension/movez-vscode.vsix
@@ -111,15 +111,15 @@ jobs:
       # The app is not code-signed yet; don't let electron-builder look for certificates
       CSC_IDENTITY_AUTO_DISCOVERY: "false"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "22"
           cache: npm
           cache-dependency-path: electron-app/package-lock.json
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: movez-phar
           path: electron-app/resources
@@ -188,7 +188,7 @@ jobs:
             esac
           fi
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: movez-desktop-${{ matrix.target }}-${{ matrix.arch }}
           path: ${{ matrix.artifact }}
@@ -199,12 +199,12 @@ jobs:
     needs: [build-phar, build-vsix, build-desktop]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: artifacts
           merge-multiple: true
 
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           name: MoveZ ${{ github.ref_name }}
           files: artifacts/*
