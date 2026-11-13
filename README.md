@@ -158,7 +158,7 @@ The sync server also serves a web dashboard (sign-in required, no public registr
 |---|---|---|
 | `list-sessions` | List detected sessions | `--tool`, `--project`, `--json` |
 | `show` | Print one session with all turns | `--tool`, `--id`, `--json` |
-| `export` | Write sessions to a `.cbz` bundle (or `.json`) | `--tool`, `--output`, `--project`, `--encrypt`, `--with-config` |
+| `export` | Write sessions to a `.cbz` bundle (or `.json`) | `--tool` (one or comma-separated), `--id` (repeatable), `--output`, `--project`, `--encrypt`, `--with-config` |
 | `import` | Load a bundle into a tool | `--input`, `--tool`, `--project`, `--from-path`, `--to-path`, `--with-config` |
 | `transfer` | Export + import in one step | `--from`, `--to`, `--project`, `--from-path`, `--to-path` |
 | `package` / `unpack` | Convert between `.json` session lists and `.cbz` | `--input`, `--output`, `--encrypt` |
@@ -187,7 +187,7 @@ Each session has `id, title, project, source_tool, created_at, last_active_at, t
 <details>
 <summary><strong>Building from source</strong></summary>
 
-Requirements: PHP 8.2+ (`pdo_sqlite`, `openssl`, `zip`, `mbstring`), Composer 2, Node 20+.
+Requirements: PHP 8.2+ (`pdo_sqlite`, `openssl`, `zip`, `mbstring`), Composer 2, Node 22+.
 
 ```
 movez/             Laravel Zero CLI → movez.phar

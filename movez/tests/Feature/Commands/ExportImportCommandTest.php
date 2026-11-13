@@ -141,3 +141,45 @@ it('json output is not mangled by the console formatter', function (): void {
         }
     });
 });
+
+it('export --id only includes the chosen sessions', function (): void {
+    withTempDir(function (string $dir): void {
+        seedClaudeSession($dir . '/claude', 'sess-a', '/work/alpha', 'Alpha task');
+        seedClaudeSession($dir . '/claude', 'sess-b', '/work/alpha', 'Beta task');
+        seedClaudeSession($dir . '/claude', 'sess-c', '/work/alpha', 'Gamma task');
+        config(["movez.tools.claude-code.storage.{$this->os}" => $dir . '/claude']);
+
+        $this->artisan('export', ['--tool' => 'claude-code', '--id' => ['sess-a', 'sess-c', 'nope'], '--output' => $dir . '/picked.json'])
+            ->expectsOutputToContain('Session(s) not found: nope')
+            ->expectsOutputToContain('Exported 2 session(s)')
+            ->assertExitCode(0);
+
+        $data = json_decode((string) file_get_contents($dir . '/picked.json'), true);
+        expect(array_column($data, 'id'))->toEqualCanonicalizing(['sess-a', 'sess-c']);
+    });
+});
+
+it('export bundles sessions from several tools together', function (): void {
+    withTempDir(function (string $dir): void {
+        seedClaudeSession($dir . '/claude', 'sess-a', '/work/alpha', 'Alpha task');
+        config([
+            "movez.tools.claude-code.storage.{$this->os}" => $dir . '/claude',
+            "movez.tools.codex.storage.{$this->os}"       => $dir . '/codex',
+        ]);
+
+        // Put a Codex copy of the session next to the Claude Code one
+        $this->artisan('transfer', ['--from' => 'claude-code', '--to' => 'codex', '--project' => '/work/alpha'])
+            ->assertExitCode(0);
+
+        $this->artisan('export', ['--tool' => 'claude-code,codex', '--output' => $dir . '/both.cbz'])
+            ->expectsOutputToContain('Exported 2 session(s)')
+            ->assertExitCode(0);
+
+        $zip = new ZipArchive();
+        $zip->open($dir . '/both.cbz');
+        $manifest = json_decode((string) $zip->getFromName('manifest.json'), true);
+        $zip->close();
+        expect($manifest['source_tool'])->toBe('claude-code,codex')
+            ->and($manifest['session_count'])->toBe(2);
+    });
+});
