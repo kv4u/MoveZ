@@ -125,24 +125,6 @@ async function browsePhpPath() {
           Stored locally. Sent only to your configured server.
         </p>
       </div>
-
-      <!-- Dark mode -->
-      <div class="flex items-center justify-between py-4 border-t border-slate-800">
-        <div>
-          <div class="text-sm font-medium text-slate-300">Dark Mode</div>
-          <div class="text-xs text-slate-600">Use dark interface theme</div>
-        </div>
-        <button
-          class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors"
-          :class="form.darkMode ? 'bg-brand-600' : 'bg-slate-700'"
-          @click="form.darkMode = !form.darkMode"
-        >
-          <span
-            class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform"
-            :class="form.darkMode ? 'translate-x-6' : 'translate-x-1'"
-          />
-        </button>
-      </div>
     </div>
 
     <!-- Save -->

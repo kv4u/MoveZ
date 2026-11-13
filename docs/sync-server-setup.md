@@ -11,7 +11,7 @@ The server stores **only ciphertext**. The CLI encrypts sessions with AES-256-GC
 - PHP 8.2+ with `pdo_mysql` (or `pdo_sqlite`), `openssl`, `mbstring`
 - MySQL 8.0+, or SQLite for a single-user setup
 - Composer 2.x
-- Node 20+ (to build the dashboard assets)
+- Node 22+ (to build the dashboard assets)
 - Optional: Redis 7+ and `pcntl`/`posix` (Linux/macOS) if you run Laravel Horizon. Sync itself doesn't use queues.
 
 > **Windows:** `laravel/horizon` requires `ext-pcntl`/`ext-posix`, which don't exist on Windows. Install with

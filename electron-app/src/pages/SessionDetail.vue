@@ -13,6 +13,8 @@ const sessions = useSessionsStore()
 const session = ref<SessionDetail | null>(null)
 const loading = ref(true)
 const error   = ref<string | null>(null)
+const exporting = ref(false)
+const exportMsg = ref('')
 
 onMounted(async () => {
   const tool = route.params.tool as string
@@ -47,11 +49,22 @@ async function exportSession() {
     filters:     [{ name: 'MoveZ Bundle', extensions: ['cbz'] }]
   })
   if (!outputPath) return
-  await window.bridge.exportSessions({
-    tool:       route.params.tool as string,
-    outputPath,
-    encrypt:    false
-  })
+
+  exporting.value = true
+  exportMsg.value = ''
+  try {
+    await window.bridge.exportSessions({
+      tool:       route.params.tool as string,
+      ids:        [route.params.id as string],
+      outputPath,
+      encrypt:    false
+    })
+    exportMsg.value = `Exported to ${outputPath.split(/[\\/]/).pop()}`
+  } catch (e) {
+    exportMsg.value = 'Export failed: ' + (e instanceof Error ? e.message : String(e))
+  } finally {
+    exporting.value = false
+  }
 }
 </script>
 
@@ -81,11 +94,16 @@ async function exportSession() {
         </div>
         <button
           class="px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-sm text-slate-300
-                 hover:border-brand-500/50 hover:text-brand-300 transition-colors shrink-0"
+                 hover:border-brand-500/50 hover:text-brand-300 transition-colors shrink-0 disabled:opacity-50"
+          :disabled="exporting"
           @click="exportSession"
         >
-          Export .cbz
+          {{ exporting ? 'Exporting…' : 'Export .cbz' }}
         </button>
+      </div>
+
+      <div v-if="exportMsg" class="mb-6 px-4 py-2 rounded-xl bg-slate-800 text-xs text-slate-300">
+        {{ exportMsg }}
       </div>
 
       <!-- Turns -->

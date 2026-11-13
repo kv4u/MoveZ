@@ -27,7 +27,6 @@ export interface Settings {
   phpPath: string
   serverUrl: string
   token: string
-  darkMode: boolean
 }
 
 export interface TransferResult {
@@ -58,7 +57,10 @@ export interface Bridge {
 }
 
 export interface ExportOpts {
+  /** One tool, or several separated by commas */
   tool: string
+  /** Only these session IDs (all of the tool's sessions when omitted) */
+  ids?: string[]
   outputPath: string
   encrypt: boolean
   project?: string
