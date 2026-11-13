@@ -6,7 +6,6 @@ interface Settings {
   phpPath:   string
   serverUrl: string
   token:     string
-  darkMode:  boolean
 }
 
 const store = new Store<Settings>({
@@ -14,10 +13,13 @@ const store = new Store<Settings>({
     cliPath:   'movez',
     phpPath:   'php',
     serverUrl: '',
-    token:     '',
-    darkMode:  true
+    token:     ''
   }
 })
+
+// Older versions stored a dark-mode switch; the app is dark-only now, and an
+// unknown key would make saving the settings form fail validation
+;(store as unknown as Store<Record<string, unknown>>).delete('darkMode')
 
 // The renderer may only change known keys, with the right types. cliPath and
 // phpPath are executed by the main process, so they must be plain strings.
@@ -25,8 +27,7 @@ const VALIDATORS: { [K in keyof Settings]: (v: unknown) => v is Settings[K] } = 
   cliPath:   (v): v is string => typeof v === 'string' && v.length < 1024 && !/[\r\n]/.test(v),
   phpPath:   (v): v is string => typeof v === 'string' && v.length < 1024 && !/[\r\n]/.test(v),
   serverUrl: (v): v is string => typeof v === 'string' && (v === '' || /^https?:\/\/[^\s]+$/i.test(v)),
-  token:     (v): v is string => typeof v === 'string' && v.length < 512,
-  darkMode:  (v): v is boolean => typeof v === 'boolean'
+  token:     (v): v is string => typeof v === 'string' && v.length < 512
 }
 
 function applySetting(key: string, value: unknown): void {

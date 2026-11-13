@@ -7,22 +7,15 @@ export const useSettingsStore = defineStore('settings', () => {
     cliPath:   'movez',
     phpPath:   'php',
     serverUrl: '',
-    token:     '',
-    darkMode:  true
+    token:     ''
   })
 
   async function load() {
     settings.value = await window.bridge.getSettings()
-    applyTheme(settings.value.darkMode)
   }
 
   async function save(partial: Partial<Settings>) {
     settings.value = await window.bridge.saveSettings(partial)
-    if ('darkMode' in partial) applyTheme(partial.darkMode!)
-  }
-
-  function applyTheme(dark: boolean) {
-    document.documentElement.classList.toggle('dark', dark)
   }
 
   return { settings, load, save }

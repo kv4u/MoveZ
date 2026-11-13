@@ -106,28 +106,23 @@ async function bundleSelected() {
   exporting.value = true
   exportMsg.value = ''
 
-  // Group selected IDs by tool
-  const byTool: Record<string, string[]> = {}
-  for (const id of selected.value) {
-    const s = sessions.all.find(x => x.id === id)
-    if (!s) continue
-    if (!byTool[s.source_tool]) byTool[s.source_tool] = []
-    byTool[s.source_tool].push(id)
+  // One bundle holds exactly the chosen sessions, from every tool they came from
+  const ids       = [...selected.value]
+  const fromTools = [...new Set(sessions.all.filter(s => selected.value.has(s.id)).map(s => s.source_tool))]
+
+  try {
+    await window.bridge.exportSessions({
+      tool:       fromTools.join(','),
+      ids,
+      outputPath,
+      encrypt:    false,
+    })
+    exportMsg.value = `Bundled ${ids.length} ${ids.length === 1 ? 'session' : 'sessions'} → ${outputPath.split(/[\\/]/).pop()}`
+  } catch (e: any) {
+    exportMsg.value = 'Export failed: ' + (e?.message ?? e)
+  } finally {
+    exporting.value = false
   }
-
-  // Export each tool's sessions — they'll merge into one zip via sequential writes
-  // For simplicity: export first tool, then note multi-tool limitation
-  const tools = Object.keys(byTool)
-  const result = await window.bridge.exportSessions({
-    tool:       tools[0],
-    outputPath,
-    encrypt:    false,
-  })
-
-  exporting.value = false
-  exportMsg.value = result.success
-    ? `Bundled ${selected.value.size} session(s) → ${outputPath.split(/[\\/]/).pop()}`
-    : 'Export failed: ' + result.output
 }
 
 const tools = ['all', ...READABLE_TOOLS]

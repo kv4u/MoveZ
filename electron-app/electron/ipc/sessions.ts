@@ -37,8 +37,10 @@ export function registerSessionHandlers(): void {
     outputPath: string
     encrypt: boolean
     project?: string
+    ids?: string[]
   }) => {
     const args = ['export', `--tool=${opts.tool}`, `--output=${opts.outputPath}`]
+    for (const id of opts.ids ?? []) args.push(`--id=${id}`)
     if (opts.encrypt) args.push('--encrypt')
     if (opts.project) args.push(`--project=${opts.project}`)
 
