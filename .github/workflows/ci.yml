@@ -34,7 +34,7 @@ jobs:
           MOVEZ_TOKEN_PATH: /tmp/movez_test_token
 
   web-tests:
-    name: Web Tests (PHP 8.2 + Node 20)
+    name: Web Tests (PHP 8.2 + Node 22)
     runs-on: ubuntu-latest
 
     steps:
@@ -47,7 +47,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: npm
           cache-dependency-path: web/package-lock.json
 
@@ -107,7 +107,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: npm
           cache-dependency-path: vscode-extension/package-lock.json
 
@@ -142,7 +142,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: npm
           cache-dependency-path: electron-app/package-lock.json
 

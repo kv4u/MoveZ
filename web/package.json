@@ -17,7 +17,7 @@
         "tailwindcss": "^4.2.2",
         "typescript": "^5.7.2",
         "vite": "^7.0.7",
-        "vue-tsc": "^2.2.0"
+        "vue-tsc": "^3.3.14"
     },
     "dependencies": {
         "@inertiajs/vue3": "^2.3.18",

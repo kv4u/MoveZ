@@ -25,13 +25,13 @@
     "@types/node": "^22.10.0",
     "@vitejs/plugin-vue": "^5.2.1",
     "autoprefixer": "^10.4.20",
-    "electron": "^33.3.1",
-    "electron-builder": "^25.1.8",
+    "electron": "^45.3.2",
+    "electron-builder": "^26.18.0",
     "electron-vite": "^3.0.0",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.2",
     "vite": "^6.0.5",
-    "vue-tsc": "^2.2.0"
+    "vue-tsc": "^3.3.14"
   },
   "build": {
     "appId": "com.movez.desktop",
