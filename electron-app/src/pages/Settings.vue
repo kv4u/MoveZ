@@ -125,6 +125,29 @@ async function browsePhpPath() {
           Stored locally. Sent only to your configured server.
         </p>
       </div>
+
+      <!-- Update check -->
+      <div class="flex items-center justify-between gap-6 py-4 border-t border-slate-800">
+        <div>
+          <div class="text-sm font-medium text-slate-300">Check for updates</div>
+          <div class="text-xs text-slate-600">
+            On startup, ask GitHub for the latest MoveZ release. Nothing about you or your sessions is sent.
+          </div>
+        </div>
+        <button
+          role="switch"
+          :aria-checked="form.checkUpdates"
+          aria-label="Check for updates"
+          class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors"
+          :class="form.checkUpdates ? 'bg-brand-600' : 'bg-slate-700'"
+          @click="form.checkUpdates = !form.checkUpdates"
+        >
+          <span
+            class="inline-block h-4 w-4 transform rounded-full transition-transform"
+            :class="form.checkUpdates ? 'translate-x-6 bg-ink' : 'translate-x-1 bg-slate-300'"
+          />
+        </button>
+      </div>
     </div>
 
     <!-- Save -->

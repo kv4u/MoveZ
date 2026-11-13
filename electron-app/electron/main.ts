@@ -7,6 +7,7 @@ import { registerSyncHandlers } from './ipc/sync'
 import { registerDoctorHandlers } from './ipc/doctor'
 import { registerSettingsHandlers } from './ipc/settings'
 import { registerDialogHandlers } from './ipc/dialog'
+import { registerUpdateHandlers } from './ipc/updates'
 
 // Enforce single instance — second launch focuses the existing window
 if (!app.requestSingleInstanceLock()) {
@@ -25,7 +26,7 @@ function createWindow(): void {
     show: false,
     autoHideMenuBar: true,
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
-    backgroundColor: '#0f172a',
+    backgroundColor: '#0b0b0c',
     webPreferences: {
       preload: join(__dirname, '../preload/preload.js'),
       sandbox: true,
@@ -80,6 +81,7 @@ app.whenReady().then(() => {
   registerDoctorHandlers()
   registerSettingsHandlers()
   registerDialogHandlers()
+  registerUpdateHandlers()
 
   // Dark/light mode toggle
   ipcMain.handle('theme:toggle', () => {

@@ -15,6 +15,12 @@ const loading = ref(true)
 const error   = ref<string | null>(null)
 const exporting = ref(false)
 const exportMsg = ref('')
+const encryptBundle = ref(true)
+
+// Session titles are free text; keep the suggested file name valid on every OS
+function fileSafe(title?: string): string {
+  return (title ?? '').replace(/[\\/:*?"<>|\r\n\t]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 80)
+}
 
 onMounted(async () => {
   const tool = route.params.tool as string
@@ -45,7 +51,7 @@ onMounted(async () => {
 async function exportSession() {
   const outputPath = await window.bridge.saveFile({
     title:       'Export Session Bundle',
-    defaultPath: `${session.value?.title ?? 'session'}.cbz`,
+    defaultPath: `${fileSafe(session.value?.title) || 'session'}.cbz`,
     filters:     [{ name: 'MoveZ Bundle', extensions: ['cbz'] }]
   })
   if (!outputPath) return
@@ -57,9 +63,10 @@ async function exportSession() {
       tool:       route.params.tool as string,
       ids:        [route.params.id as string],
       outputPath,
-      encrypt:    false
+      encrypt:    encryptBundle.value
     })
     exportMsg.value = `Exported to ${outputPath.split(/[\\/]/).pop()}`
+      + (encryptBundle.value ? ' (encrypted: import it on a machine with the same key)' : '')
   } catch (e) {
     exportMsg.value = 'Export failed: ' + (e instanceof Error ? e.message : String(e))
   } finally {
@@ -92,14 +99,23 @@ async function exportSession() {
             </span>
           </div>
         </div>
-        <button
-          class="px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-sm text-slate-300
-                 hover:border-brand-500/50 hover:text-brand-300 transition-colors shrink-0 disabled:opacity-50"
-          :disabled="exporting"
-          @click="exportSession"
-        >
-          {{ exporting ? 'Exporting…' : 'Export .cbz' }}
-        </button>
+        <div class="flex items-center gap-3 shrink-0">
+          <label
+            class="flex items-center gap-2 text-xs text-slate-400 cursor-pointer select-none"
+            title="Encrypt with your MoveZ key (AES-256-GCM). The importing machine needs the same key."
+          >
+            <input v-model="encryptBundle" type="checkbox" class="w-3.5 h-3.5 rounded accent-[#eeeaa2]" />
+            Encrypt
+          </label>
+          <button
+            class="px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-sm text-slate-300
+                   hover:border-brand-500/50 hover:text-brand-300 transition-colors disabled:opacity-50"
+            :disabled="exporting"
+            @click="exportSession"
+          >
+            {{ exporting ? 'Exporting…' : 'Export .cbz' }}
+          </button>
+        </div>
       </div>
 
       <div v-if="exportMsg" class="mb-6 px-4 py-2 rounded-xl bg-slate-800 text-xs text-slate-300">

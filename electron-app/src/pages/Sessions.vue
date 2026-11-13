@@ -10,6 +10,7 @@ const activeTool = ref<string>('all')
 const selected   = ref<Set<string>>(new Set())
 const exporting  = ref(false)
 const exportMsg  = ref('')
+const encryptBundle = ref(true)
 
 // Import state
 const importing     = ref(false)
@@ -115,9 +116,10 @@ async function bundleSelected() {
       tool:       fromTools.join(','),
       ids,
       outputPath,
-      encrypt:    false,
+      encrypt:    encryptBundle.value,
     })
     exportMsg.value = `Bundled ${ids.length} ${ids.length === 1 ? 'session' : 'sessions'} → ${outputPath.split(/[\\/]/).pop()}`
+      + (encryptBundle.value ? ' (encrypted: import it on a machine with the same key)' : '')
   } catch (e: any) {
     exportMsg.value = 'Export failed: ' + (e?.message ?? e)
   } finally {
@@ -164,6 +166,13 @@ const tools = ['all', ...READABLE_TOOLS]
       <!-- Selection actions (shown when items selected) -->
       <template v-if="selected.size > 0">
         <span class="text-xs text-slate-400">{{ selected.size }} selected</span>
+        <label
+          class="flex items-center gap-2 text-xs text-slate-400 cursor-pointer select-none"
+          title="Encrypt with your MoveZ key (AES-256-GCM). The importing machine needs the same key."
+        >
+          <input v-model="encryptBundle" type="checkbox" class="w-3.5 h-3.5 rounded accent-[#eeeaa2]" />
+          Encrypt
+        </label>
         <button
           class="px-3 py-2 rounded-full bg-brand-600 hover:bg-brand-500 text-ink text-xs font-semibold transition-colors disabled:opacity-50"
           :disabled="exporting"

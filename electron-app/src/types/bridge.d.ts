@@ -27,6 +27,7 @@ export interface Settings {
   phpPath: string
   serverUrl: string
   token: string
+  checkUpdates: boolean
 }
 
 export interface TransferResult {
@@ -52,8 +53,16 @@ export interface Bridge {
   openFile:          (opts: { title?: string; filters?: FileFilter[] }) => Promise<string | null>
   openDirectory:     (opts: { title?: string }) => Promise<string | null>
   saveFile:          (opts: { title?: string; defaultPath?: string; filters?: FileFilter[] }) => Promise<string | null>
+  checkForUpdates:   () => Promise<UpdateInfo>
+  openReleasePage:   () => Promise<void>
   toggleTheme:       () => Promise<boolean>
   getTheme:          () => Promise<boolean>
+}
+
+export interface UpdateInfo {
+  current: string
+  latest: string | null
+  available: boolean
 }
 
 export interface ExportOpts {
