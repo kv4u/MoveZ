@@ -42,6 +42,10 @@ export const bridge = {
   openDirectory: (opts: unknown) => ipcRenderer.invoke('dialog:openDirectory', opts),
   saveFile:      (opts: unknown) => ipcRenderer.invoke('dialog:saveFile', opts),
 
+  // Updates
+  checkForUpdates: () => ipcRenderer.invoke('updates:check'),
+  openReleasePage: () => ipcRenderer.invoke('updates:open'),
+
   // Theme
   toggleTheme: () => ipcRenderer.invoke('theme:toggle'),
   getTheme:    () => ipcRenderer.invoke('theme:get')

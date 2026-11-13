@@ -6,6 +6,7 @@ interface Settings {
   phpPath:   string
   serverUrl: string
   token:     string
+  checkUpdates: boolean
 }
 
 const store = new Store<Settings>({
@@ -13,7 +14,8 @@ const store = new Store<Settings>({
     cliPath:   'movez',
     phpPath:   'php',
     serverUrl: '',
-    token:     ''
+    token:     '',
+    checkUpdates: true
   }
 })
 
@@ -27,7 +29,8 @@ const VALIDATORS: { [K in keyof Settings]: (v: unknown) => v is Settings[K] } = 
   cliPath:   (v): v is string => typeof v === 'string' && v.length < 1024 && !/[\r\n]/.test(v),
   phpPath:   (v): v is string => typeof v === 'string' && v.length < 1024 && !/[\r\n]/.test(v),
   serverUrl: (v): v is string => typeof v === 'string' && (v === '' || /^https?:\/\/[^\s]+$/i.test(v)),
-  token:     (v): v is string => typeof v === 'string' && v.length < 512
+  token:     (v): v is string => typeof v === 'string' && v.length < 512,
+  checkUpdates: (v): v is boolean => typeof v === 'boolean'
 }
 
 function applySetting(key: string, value: unknown): void {

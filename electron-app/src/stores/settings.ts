@@ -7,7 +7,8 @@ export const useSettingsStore = defineStore('settings', () => {
     cliPath:   'movez',
     phpPath:   'php',
     serverUrl: '',
-    token:     ''
+    token:     '',
+    checkUpdates: true
   })
 
   async function load() {

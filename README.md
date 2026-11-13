@@ -213,7 +213,7 @@ Pushing a `v*` tag builds and publishes the PHAR, the VSIX and the Windows, macO
 - Sessions are encrypted client-side with AES-256-GCM before export or sync; the server stores only ciphertext.
 - The key lives at `~/.movez/key` (0600 on macOS/Linux) and only leaves your machine when you run `movez key:export`.
 - Sync API tokens are stored server-side as SHA-256 hashes, and the dashboard requires sign-in.
-- No telemetry. MoveZ only talks to the sync server you configure.
+- No telemetry. MoveZ only talks to the sync server you configure, plus the desktop app's check for a newer release on GitHub, which sends nothing about you and can be turned off in **Settings**.
 
 ## Roadmap
 
