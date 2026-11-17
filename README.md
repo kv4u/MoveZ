@@ -110,18 +110,22 @@ movez import --input=work.cbz --tool=claude-code \
 | Claude Code | ✅ | ✅ | `~/.claude/projects/*.jsonl` (+ Claude desktop app registry) |
 | Codex CLI | ✅ | ✅ | `~/.codex/sessions/YYYY/MM/DD/rollout-*.jsonl` |
 | Copilot CLI | ✅ | ✅ | `~/.copilot/session-state/<id>/` |
-| Cline | ✅ | — | VS Code extension task history |
-| Continue | ✅ | — | `~/.continue/sessions/*.json` |
+| Cline | ✅ | ✅ | `~/.cline/data` (sessions and tasks) + the editor's Cline storage |
+| Continue | ✅ | ✅ | `~/.continue/sessions/*.json` + `sessions.json` index |
 | Windsurf | — | — | Not yet: Cascade stores conversations in an encrypted format |
 
 <details>
-<summary><strong>Tool-specific notes</strong> (Cursor, Claude Code, Copilot CLI)</summary>
+<summary><strong>Tool-specific notes</strong> (Cursor, Claude Code, Copilot CLI, Cline, Continue)</summary>
 
 **Cursor** only shows sessions for workspaces it already knows. Open the target project in Cursor once and quit it completely, then import and reopen Cursor. The full history is visible, but Cursor's internal model state can't be recreated, so to continue a conversation start a new chat and reference the old one.
 
 **Claude Code** sessions are written under `~/.claude/projects/<encoded-path>/`. On Windows they're also registered with the Claude desktop app so they appear in its history. Re-importing updates a session instead of duplicating it.
 
 **Copilot CLI** keeps a search index of sessions. If imported sessions don't appear in its history, run `/chronicle reindex` inside Copilot CLI.
+
+**Cline** imports appear in its task history alongside your own tasks. They're written to `~/.cline/data` and to the Cline folder of every VS Code-family editor that has one, so both current and older Cline versions see them. Close the editor before importing (a running Cline can overwrite its task list from memory), then reopen it. Imported tasks show the full conversation; to keep going, start a new task that references it.
+
+**Continue** imports appear in its session history. Pass `--project` (or import from the project folder): Continue lists sessions per workspace, so the path should match the folder you open in the editor. Re-importing updates a session instead of duplicating it.
 </details>
 
 ## Sync between machines

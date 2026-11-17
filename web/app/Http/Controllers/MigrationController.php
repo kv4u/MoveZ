@@ -16,7 +16,7 @@ class MigrationController extends Controller
     private const SOURCE_TOOLS = ['cursor', 'claude-code', 'codex', 'copilot-cli', 'cline', 'continue'];
 
     /** Tools the CLI can write to. */
-    private const TARGET_TOOLS = ['cursor', 'claude-code', 'codex', 'copilot-cli'];
+    private const TARGET_TOOLS = ['cursor', 'claude-code', 'codex', 'copilot-cli', 'cline', 'continue'];
 
     public function wizard(Request $request): Response
     {

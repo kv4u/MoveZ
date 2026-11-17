@@ -12,9 +12,12 @@ use App\Parsers\ContinueParser;
 use App\Parsers\CopilotCliParser;
 use App\Parsers\CursorParser;
 use App\Parsers\WindsurfParser;
+use App\Support\ClineLocations;
 use App\Support\PlatformPaths;
 use App\Writers\ClaudeCodeWriter;
+use App\Writers\ClineWriter;
 use App\Writers\CodexWriter;
+use App\Writers\ContinueWriter;
 use App\Writers\CopilotCliWriter;
 use App\Writers\CursorWriter;
 use App\Writers\WindsurfWriter;
@@ -38,6 +41,8 @@ final class ToolDetector
         'claude-code' => ClaudeCodeWriter::class,
         'codex'       => CodexWriter::class,
         'copilot-cli' => CopilotCliWriter::class,
+        'cline'       => ClineWriter::class,
+        'continue'    => ContinueWriter::class,
     ];
 
     /**
@@ -63,8 +68,12 @@ final class ToolDetector
                 continue;
             }
 
-            // Handle glob-style paths (e.g. Cline's wildcard extension path)
-            if (str_contains($storagePath, '*')) {
+            // Cline has several possible locations (its own data folder and each editor's)
+            if ($name === 'cline') {
+                if (ClineLocations::exists()) {
+                    $detected[] = $name;
+                }
+            } elseif (str_contains($storagePath, '*')) {
                 $matches = PlatformPaths::globExpand($storagePath);
                 if (!empty($matches)) {
                     $detected[] = $name;
