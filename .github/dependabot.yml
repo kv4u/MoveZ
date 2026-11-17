@@ -17,6 +17,10 @@ updates:
     open-pull-requests-limit: 5
     groups:
       minor-and-patch: { update-types: [minor, patch] }
+    ignore:
+      # Inertia 3 is a breaking server + client migration; do it together with @inertiajs/vue3
+      - dependency-name: "inertiajs/inertia-laravel"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: npm
     directory: /web
@@ -24,6 +28,15 @@ updates:
     open-pull-requests-limit: 5
     groups:
       minor-and-patch: { update-types: [minor, patch] }
+    ignore:
+      # Vite 8 waits on @tailwindcss/vite support, and laravel-vite-plugin 3 needs Vite 8
+      - dependency-name: "vite"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "laravel-vite-plugin"
+        update-types: ["version-update:semver-major"]
+      # Inertia 3: see the composer entry above
+      - dependency-name: "@inertiajs/vue3"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: npm
     directory: /electron-app
@@ -31,6 +44,16 @@ updates:
     open-pull-requests-limit: 5
     groups:
       minor-and-patch: { update-types: [minor, patch] }
+    ignore:
+      # TypeScript 7 (native compiler) is not supported by vue-tsc yet
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      # electron-store 9+ is ESM-only with a new API; 8.x has no known issues
+      - dependency-name: "electron-store"
+        update-types: ["version-update:semver-major"]
+      # Node types follow the Node version Electron ships, not the latest Node
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: npm
     directory: /vscode-extension
@@ -41,6 +64,12 @@ updates:
     ignore:
       # Tracks the oldest VS Code the extension supports (engines.vscode), not the latest
       - dependency-name: "@types/vscode"
+      # Node types follow the Node version inside the oldest supported VS Code
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+      # TypeScript 7 (native compiler) changes type loading; revisit once it settles
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
     directory: /
