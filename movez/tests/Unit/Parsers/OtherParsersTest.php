@@ -81,22 +81,61 @@ it('Codex writer output round-trips through the Codex parser', function (): void
     });
 });
 
-it('Cline parser reads per-task api_conversation_history.json files', function (): void {
+function clineConfig(string $dir): void
+{
+    config([
+        storageKey('cline')                                                            => $dir . '/cline-data',
+        'movez.tools.cline.editor_storage.' . PlatformPaths::configKey() => $dir . '/editors/*/User/globalStorage/saoudrizwan.claude-dev',
+    ]);
+}
+
+it('Cline parser reads legacy tasks from an editor\'s global storage, with the task list', function (): void {
     withTempDir(function (string $dir): void {
-        $tasks = $dir . '/ext-1.0/data/tasks';
-        mkdir($tasks . '/1736935200000', 0755, true);
-        file_put_contents($tasks . '/1736935200000/api_conversation_history.json', json_encode([
-            ['role' => 'user', 'content' => [['type' => 'text', 'text' => "<task>\nFix the login bug\n</task>"]]],
+        $root = $dir . '/editors/Code/User/globalStorage/saoudrizwan.claude-dev';
+        mkdir($root . '/tasks/1736935200000', 0755, true);
+        mkdir($root . '/state', 0755, true);
+        file_put_contents($root . '/tasks/1736935200000/api_conversation_history.json', json_encode([
+            ['role' => 'user', 'content' => [['type' => 'text', 'text' => "<task>\nFix the login bug\n</task>\n<environment_details>…</environment_details>"]]],
             ['role' => 'assistant', 'content' => [['type' => 'text', 'text' => 'Looking at auth.ts']]],
         ]));
+        file_put_contents($root . '/state/taskHistory.json', json_encode([
+            ['id' => '1736935200000', 'ts' => 1736935500000, 'task' => 'Fix the login bug', 'tokensIn' => 1, 'tokensOut' => 2, 'totalCost' => 0, 'cwdOnTaskInitialization' => '/home/dev/web-app'],
+        ]));
 
-        config([storageKey('cline') => $dir . '/ext-*/data/tasks']);
+        clineConfig($dir);
         $session = (new ClineParser())->parse('/any')->first();
 
         expect($session->id)->toBe('1736935200000')
             ->and($session->title)->toBe('Fix the login bug')
+            ->and($session->project)->toBe('web-app')
+            ->and($session->lastActiveAt->getTimestampMs())->toBe(1736935500000)
             ->and($session->turns)->toHaveCount(2)
             ->and($session->turns->last()->content)->toBe('Looking at auth.ts');
+    });
+});
+
+it('Cline parser reads SDK sessions and skips sub-agents', function (): void {
+    withTempDir(function (string $dir): void {
+        $sessions = $dir . '/cline-data/sessions';
+        foreach (['sess_1' => 'cli', 'sess_1__sub__a' => 'subagent', 'sess_2' => 'subagent'] as $id => $source) {
+            mkdir("{$sessions}/{$id}", 0755, true);
+            file_put_contents("{$sessions}/{$id}/{$id}.json", json_encode([
+                'version' => 1, 'session_id' => $id, 'source' => $source, 'started_at' => '2026-10-01T09:00:00.000Z',
+                'cwd' => '/home/dev/api', 'workspace_root' => '/home/dev/api', 'prompt' => 'Add a health check',
+            ]));
+            file_put_contents("{$sessions}/{$id}/{$id}.messages.json", json_encode(['messages' => [
+                ['role' => 'user', 'content' => [['type' => 'text', 'text' => 'Add a health check']]],
+                ['role' => 'assistant', 'content' => [['type' => 'text', 'text' => 'Added GET /health']]],
+            ]]));
+        }
+
+        clineConfig($dir);
+        $parsed = (new ClineParser())->parse('/any');
+
+        expect($parsed->pluck('id')->all())->toBe(['sess_1'])
+            ->and($parsed->first()->title)->toBe('Add a health check')
+            ->and($parsed->first()->project)->toBe('api')
+            ->and($parsed->first()->turns->pluck('content')->all())->toBe(['Add a health check', 'Added GET /health']);
     });
 });
 

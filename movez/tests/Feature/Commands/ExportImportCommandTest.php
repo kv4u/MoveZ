@@ -183,3 +183,25 @@ it('export bundles sessions from several tools together', function (): void {
             ->and($manifest['session_count'])->toBe(2);
     });
 });
+
+it('transfer writes into Cline and Continue', function (): void {
+    withTempDir(function (string $dir): void {
+        seedClaudeSession($dir . '/claude', 'sess-a', '/work/alpha', 'Alpha task');
+        config([
+            "movez.tools.claude-code.storage.{$this->os}"  => $dir . '/claude',
+            "movez.tools.cline.storage.{$this->os}"        => $dir . '/cline',
+            "movez.tools.cline.editor_storage.{$this->os}" => $dir . '/no-editors/*',
+            "movez.tools.continue.storage.{$this->os}"     => $dir . '/continue',
+        ]);
+
+        foreach (['cline', 'continue'] as $target) {
+            $this->artisan('transfer', ['--from' => 'claude-code', '--to' => $target, '--project' => '/work/alpha'])
+                ->expectsOutputToContain("to {$target}")
+                ->assertExitCode(0);
+
+            $this->artisan('list-sessions', ['--tool' => $target, '--json' => true])
+                ->expectsOutputToContain('Alpha task')
+                ->assertExitCode(0);
+        }
+    });
+});

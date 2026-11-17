@@ -29,7 +29,7 @@ it('migration start requires from_tool and to_tool', function (): void {
 });
 
 it('migration start rejects tools the CLI cannot write to', function (): void {
-    $this->postJson('/migration/start', ['from_tool' => 'cursor', 'to_tool' => 'cline'])
+    $this->postJson('/migration/start', ['from_tool' => 'cursor', 'to_tool' => 'windsurf'])
         ->assertStatus(422)
         ->assertJsonValidationErrors('to_tool');
 });

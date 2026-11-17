@@ -88,10 +88,18 @@ return [
             'format' => 'jsonl-events',
         ],
         'cline' => [
+            // Cline's data folder: SDK sessions in sessions/, older tasks in state/ + tasks/
+            // (CLINE_DATA_DIR / CLINE_DIR override it, as in Cline itself)
             'storage' => [
-                'Darwin'  => '~/.vscode/extensions/saoudrizwan.claude-dev-*/data/tasks',
-                'Linux'   => '~/.vscode/extensions/saoudrizwan.claude-dev-*/data/tasks',
-                'Windows' => '%USERPROFILE%/.vscode/extensions/saoudrizwan.claude-dev-*/data/tasks',
+                'Darwin'  => '~/.cline/data',
+                'Linux'   => '~/.cline/data',
+                'Windows' => '%USERPROFILE%/.cline/data',
+            ],
+            // Tasks from before Cline's SDK store live in each VS Code-family editor's global storage
+            'editor_storage' => [
+                'Darwin'  => '~/Library/Application Support/*/User/globalStorage/saoudrizwan.claude-dev',
+                'Linux'   => '~/.config/*/User/globalStorage/saoudrizwan.claude-dev',
+                'Windows' => '%APPDATA%/*/User/globalStorage/saoudrizwan.claude-dev',
             ],
             'format' => 'json',
         ],

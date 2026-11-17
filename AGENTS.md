@@ -164,8 +164,8 @@ Required keys validated by `BundleSchema::validate()`: `version`, `sessions`, `s
 | claude-code | JSONL | ~/.claude/projects/ |
 | codex | JSONL rollout (session_meta/response_item) | ~/.codex/sessions/YYYY/MM/DD/ |
 | copilot-cli | JSONL events (session.start, user.message, assistant.message) + workspace.yaml | ~/.copilot/session-state/<uuid>/ |
-| cline | JSON per task (read-only) | ~/.vscode/extensions/saoudrizwan.claude-dev-*/data/tasks/<id>/ |
-| continue | JSON per session + sessions.json index (read-only) | ~/.continue/sessions/ |
+| cline | SDK sessions (read) + legacy JSON per task (read/write) | ~/.cline/data/sessions/<id>/, ~/.cline/data/{state,tasks}/ and <editor>/User/globalStorage/saoudrizwan.claude-dev/{state,tasks}/ |
+| continue | JSON per session + sessions.json index (read/write) | ~/.continue/sessions/ |
 
 ---
 

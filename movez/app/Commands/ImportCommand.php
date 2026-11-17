@@ -15,7 +15,7 @@ class ImportCommand extends Command
 {
     protected $signature = 'import
                             {--input= : Path to the bundle file (.cbz or .json)}
-                            {--tool= : Target tool (cursor|claude-code|codex|copilot-cli)}
+                            {--tool= : Target tool (cursor|claude-code|codex|copilot-cli|cline|continue)}
                             {--project= : Target project path}
                             {--encrypted : Input .json file is AES-256-GCM encrypted (.cbz bundles are detected automatically)}
                             {--from-path= : Source project path (for path remapping)}

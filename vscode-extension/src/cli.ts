@@ -110,7 +110,7 @@ export async function setToken(secrets: vscode.SecretStorage, token: string): Pr
 }
 
 /** Tools the CLI can write to (Windsurf is not supported yet). */
-export const WRITABLE_TOOLS = ['cursor', 'claude-code', 'codex', 'copilot-cli'];
+export const WRITABLE_TOOLS = ['cursor', 'claude-code', 'codex', 'copilot-cli', 'cline', 'continue'];
 
 /** Tools the CLI can read from. */
 export const READABLE_TOOLS = ['cursor', 'claude-code', 'codex', 'copilot-cli', 'cline', 'continue'];
