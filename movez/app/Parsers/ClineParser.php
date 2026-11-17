@@ -112,6 +112,7 @@ class ClineParser implements ParserInterface
             lastActiveAt:     $this->parseDate($manifest['ended_at'] ?? null) ?? Carbon::createFromTimestamp((int) filemtime($messagesFile)),
             turns:            $turns,
             project:          $this->projectName((string) ($manifest['workspace_root'] ?? $manifest['cwd'] ?? '')),
+            projectPath:      (string) ($manifest['workspace_root'] ?? $manifest['cwd'] ?? ''),
         );
     }
 
@@ -148,6 +149,7 @@ class ClineParser implements ParserInterface
                 : Carbon::createFromTimestamp((int) filemtime($file)),
             turns:            $turns,
             project:          $this->projectName((string) ($item['cwdOnTaskInitialization'] ?? '')),
+            projectPath:      (string) ($item['cwdOnTaskInitialization'] ?? ''),
         );
     }
 

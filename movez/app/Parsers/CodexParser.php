@@ -127,6 +127,7 @@ class CodexParser extends JsonlParser implements ParserInterface
             lastActiveAt:     $turns->last()->timestamp,
             turns:            $turns,
             project:          $cwd !== null ? basename(str_replace('\\', '/', rtrim($cwd, '/\\'))) : '',
+            projectPath:      $cwd ?? '',
         );
     }
 

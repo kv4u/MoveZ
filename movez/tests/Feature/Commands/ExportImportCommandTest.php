@@ -205,3 +205,41 @@ it('transfer writes into Cline and Continue', function (): void {
         }
     });
 });
+
+it('import puts sessions back under their own project, remapped to this machine', function (): void {
+    withTempDir(function (string $dir): void {
+        mkdir($dir . '/work/alpha', 0755, true);
+        seedClaudeSession($dir . '/claude', 'sess-a', 'D:/Projects/alpha', 'Alpha task');
+        config([
+            "movez.tools.claude-code.storage.{$this->os}" => $dir . '/claude',
+            "movez.tools.codex.storage.{$this->os}"       => $dir . '/codex',
+        ]);
+
+        $this->artisan('export', ['--tool' => 'claude-code', '--output' => $dir . '/out.cbz'])->assertExitCode(0);
+
+        // No --project: the session's own (remapped) folder is used
+        $this->artisan('import', [
+            '--input' => $dir . '/out.cbz', '--tool' => 'codex',
+            '--from-path' => 'D:/Projects', '--to-path' => $dir . '/work',
+        ])->doesntExpectOutputToContain('had no project folder')->assertExitCode(0);
+
+        $rollout = glob($dir . '/codex/*/*/*/rollout-*-sess-a.jsonl')[0];
+        $meta    = json_decode(strtok((string) file_get_contents($rollout), "\n"), true);
+        expect(str_replace('\\', '/', $meta['payload']['cwd']))->toBe(str_replace('\\', '/', $dir) . '/work/alpha');
+    });
+});
+
+it('import reports sessions whose project folder is not on this machine', function (): void {
+    withTempDir(function (string $dir): void {
+        seedClaudeSession($dir . '/claude', 'sess-a', 'D:/Nowhere/alpha', 'Alpha task');
+        config([
+            "movez.tools.claude-code.storage.{$this->os}" => $dir . '/claude',
+            "movez.tools.codex.storage.{$this->os}"       => $dir . '/codex',
+        ]);
+
+        $this->artisan('export', ['--tool' => 'claude-code', '--output' => $dir . '/out.cbz'])->assertExitCode(0);
+        $this->artisan('import', ['--input' => $dir . '/out.cbz', '--tool' => 'codex'])
+            ->expectsOutputToContain('1 session(s) had no project folder on this machine')
+            ->assertExitCode(0);
+    });
+});

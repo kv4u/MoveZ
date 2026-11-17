@@ -141,6 +141,7 @@ class CursorParser implements ParserInterface
             turns:            $turns,
             project:          $this->decodeProjectName($encodedProj),
             turnCount:        $metadataOnly ? $turnCount : null,
+            projectPath:      EncodedPathResolver::resolve($encodedProj) ?? '',
         );
     }
 

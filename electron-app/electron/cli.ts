@@ -1,5 +1,6 @@
 import { spawn } from 'child_process'
 import { join } from 'path'
+import { homedir } from 'os'
 import { accessSync, chmodSync, constants, existsSync } from 'fs'
 import { app } from 'electron'
 import Store from 'electron-store'
@@ -79,8 +80,11 @@ function buildSpawnArgs(cliPath: string, cliArgs: string[]): { cmd: string; cmdA
 /** Extra environment for the CLI — used for secrets (MOVEZ_TOKEN) so they never appear in process lists. */
 type CliEnv = Record<string, string>
 
+// Run from the home folder: imports of sessions whose project folder isn't on this
+// machine fall back to the working directory, and the app's own install folder
+// (or System32, when launched from the Start menu) would be the wrong place.
 function spawnOptions(env?: CliEnv) {
-  return { windowsHide: true, env: { ...process.env, ...env } }
+  return { windowsHide: true, cwd: homedir(), env: { ...process.env, ...env } }
 }
 
 export function runCli(args: string[], env?: CliEnv): Promise<CliResult> {

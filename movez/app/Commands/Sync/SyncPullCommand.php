@@ -8,10 +8,14 @@ use App\Services\Encryptor;
 use App\Services\PathMapper;
 use App\Services\SyncClient;
 use App\Services\ToolDetector;
+use App\Commands\Concerns\ReportsProjectFallback;
+use App\Support\ProjectTargets;
 use LaravelZero\Framework\Commands\Command;
 
 class SyncPullCommand extends Command
 {
+    use ReportsProjectFallback;
+
     use ResolvesSyncCredentials;
     use WritesJson;
 
@@ -30,7 +34,7 @@ class SyncPullCommand extends Command
         $token       = $this->resolveToken();
         $baseUrl     = $this->resolveServer();
         $toolName    = $this->option('tool');
-        $projectPath = (string) ($this->option('project') ?? getcwd());
+        $project     = $this->option('project');
         $fromPath    = $this->option('from-path');
         $toPath      = $this->option('to-path');
 
@@ -55,13 +59,14 @@ class SyncPullCommand extends Command
                 return self::SUCCESS;
             }
 
-            $detector->getWriter($toolName)->write($sessions, $projectPath);
+            $result = ProjectTargets::write($detector->getWriter($toolName), $sessions, $project);
         } catch (\Throwable $e) {
             $this->error('Pull failed: ' . $e->getMessage());
             return self::FAILURE;
         }
 
         $this->info("Pulled and imported {$sessions->count()} session(s) into {$toolName}");
+        $this->reportFallback($result);
         return self::SUCCESS;
     }
 }
