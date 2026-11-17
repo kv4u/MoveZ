@@ -27,6 +27,8 @@ final class PathMapper
             createdAt:        $session->createdAt,
             lastActiveAt:     $session->lastActiveAt,
             project:          $session->project,
+            projectPath:      $session->projectPath !== '' ? $this->replacePath($from, $to, $session->projectPath) : '',
+            turnCount:        $session->turnCount,
             turns:            $session->turns->map(
                 fn(TurnDTO $turn) => new TurnDTO(
                     role:            $turn->role,

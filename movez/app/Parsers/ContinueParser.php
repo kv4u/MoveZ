@@ -111,11 +111,19 @@ class ContinueParser implements ParserInterface
             lastActiveAt:     $mtime->greaterThan($created) ? $mtime : $created,
             turns:            $turns,
             project:          $this->projectName((string) ($data['workspaceDirectory'] ?? $meta['workspaceDirectory'] ?? '')),
+            projectPath:      $this->workspacePath((string) ($data['workspaceDirectory'] ?? $meta['workspaceDirectory'] ?? '')),
         );
     }
 
-    /** workspaceDirectory is a path or a file:// URI (e.g. file:///c%3A/Work/app). */
     private function projectName(string $workspace): string
+    {
+        $path = $this->workspacePath($workspace);
+
+        return $path === '' ? '' : basename(str_replace('\\', '/', rtrim($path, '/\\')));
+    }
+
+    /** workspaceDirectory is a path or a file:// URI (e.g. file:///c%3A/Work/app → C:/Work/app). */
+    private function workspacePath(string $workspace): string
     {
         if ($workspace === '') {
             return '';
@@ -123,7 +131,12 @@ class ContinueParser implements ParserInterface
 
         $path = rawurldecode((string) preg_replace('#^file://#', '', $workspace));
 
-        return basename(str_replace('\\', '/', rtrim($path, '/\\')));
+        // file:///c%3A/Work → "/c:/Work": drop the slash before a drive letter
+        if (preg_match('#^/([A-Za-z]):(/.*)?$#', $path, $m)) {
+            return strtoupper($m[1]) . ':' . ($m[2] ?? '/');
+        }
+
+        return $path;
     }
 
     private function parseDate(mixed $value): ?Carbon

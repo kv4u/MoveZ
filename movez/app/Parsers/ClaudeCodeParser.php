@@ -129,6 +129,7 @@ class ClaudeCodeParser extends JsonlParser implements ParserInterface
                 turns:            collect(),
                 project:          $project,
                 turnCount:        $turnCount,
+                projectPath:      $this->projectPath($cwd, basename(dirname($file))),
             ));
         }
 
@@ -261,6 +262,7 @@ class ClaudeCodeParser extends JsonlParser implements ParserInterface
             lastActiveAt:     $lastAt ?? Carbon::now(),
             turns:            $turns,
             project:          $project,
+            projectPath:      $this->projectPath($cwd, basename(dirname($file))),
         );
     }
 
@@ -292,6 +294,11 @@ class ClaudeCodeParser extends JsonlParser implements ParserInterface
      * Prefer the real working directory recorded in the transcript; fall back
      * to decoding the storage directory name.
      */
+    private function projectPath(?string $cwd, string $encodedDir): string
+    {
+        return $cwd !== null && $cwd !== '' ? $cwd : (EncodedPathResolver::resolve($encodedDir) ?? '');
+    }
+
     private function projectName(?string $cwd, string $encodedDir): string
     {
         if ($cwd !== null && $cwd !== '') {

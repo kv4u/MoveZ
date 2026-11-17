@@ -20,6 +20,8 @@ final readonly class SessionDTO
         public string     $project = '',
         /** Known turn count when turns are not loaded (metadata-only listings) */
         public ?int       $turnCount = null,
+        /** Full path of the project folder the session belongs to, when the tool records it */
+        public string     $projectPath = '',
     ) {}
 
     public static function fromArray(array $data): self
@@ -33,6 +35,7 @@ final readonly class SessionDTO
             lastActiveAt:     Carbon::parse($data['last_active_at'] ?? $data['created_at'] ?? 'now'),
             turns:            collect($data['turns'] ?? [])->map(fn($t) => TurnDTO::fromArray($t)),
             project:          (string) ($data['project'] ?? ''),
+            projectPath:      (string) ($data['project_path'] ?? ''),
         );
     }
 
@@ -42,6 +45,7 @@ final readonly class SessionDTO
             'id'                => $this->id,
             'title'             => $this->title,
             'project'           => $this->project,
+            'project_path'      => $this->projectPath,
             'source_tool'       => $this->sourceTool,
             'source_machine_id' => $this->sourceMachineSha,
             'created_at'        => $this->createdAt->toIso8601String(),

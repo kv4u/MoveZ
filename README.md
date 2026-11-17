@@ -88,7 +88,7 @@ movez import --input=work.cbz --tool=claude-code \
   --from-path="D:/Projects" --to-path="~/work"
 ```
 
-`--project` limits a command to one project's sessions; leave it out to include all of them.
+`--project` limits a command to one project's sessions; leave it out to include all of them. When importing without `--project`, each session goes back to the project folder it came from (after any `--from-path`/`--to-path` remap) if that folder exists on this machine; any others go under the current directory, and MoveZ tells you how many.
 
 ## Screenshots
 
@@ -185,7 +185,7 @@ A `.cbz` is a ZIP archive:
 | `manifest.json` | `{ version, source_tool, machine_sha, exported_at, session_count, encrypted }` |
 | `config.json` | Optional project config, written by `export --with-config` |
 
-Each session has `id, title, project, source_tool, created_at, last_active_at, turn_count, turns[]`; each turn has `role, content, timestamp`. Encrypted data is `base64(iv[12] ‖ tag[16] ‖ ciphertext)` (AES-256-GCM).
+Each session has `id, title, project, project_path, source_tool, created_at, last_active_at, turn_count, turns[]` (`project_path` is the full project folder, when the tool records it); each turn has `role, content, timestamp`. Encrypted data is `base64(iv[12] ‖ tag[16] ‖ ciphertext)` (AES-256-GCM).
 </details>
 
 <details>

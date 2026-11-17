@@ -125,6 +125,7 @@ class CopilotCliParser extends JsonlParser implements ParserInterface
             lastActiveAt:     $turns->last()->timestamp,
             turns:            $turns,
             project:          is_string($cwd) && $cwd !== '' ? basename(str_replace('\\', '/', rtrim($cwd, '/\\'))) : '',
+            projectPath:      is_string($cwd) ? $cwd : '',
         );
     }
 

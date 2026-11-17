@@ -76,3 +76,16 @@ it('returns new collection without mutating originals', function (): void {
         ->and($remapped->first()->turns->first()->filesReferenced)
         ->toBe(['/home/bob/project/src/Foo.php']);
 });
+
+it('remaps the project path and keeps the turn count', function (): void {
+    $session = new SessionDTO(
+        id: 's', title: 'T', sourceTool: 'cursor', sourceMachineSha: 'a',
+        createdAt: Carbon::now(), lastActiveAt: Carbon::now(), turns: collect(),
+        project: 'app', turnCount: 7, projectPath: 'D:\Projects\app',
+    );
+
+    $out = (new PathMapper())->remap('D:/Projects', '/home/dev/work', collect([$session]))->first();
+
+    expect($out->projectPath)->toBe('/home/dev/work/app')
+        ->and($out->turnCount)->toBe(7);
+});

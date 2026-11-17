@@ -6,10 +6,14 @@ namespace App\Commands;
 use App\Services\PathMapper;
 use App\Services\ToolDetector;
 use App\Support\ProjectFilter;
+use App\Commands\Concerns\ReportsProjectFallback;
+use App\Support\ProjectTargets;
 use LaravelZero\Framework\Commands\Command;
 
 class TransferCommand extends Command
 {
+    use ReportsProjectFallback;
+
     protected $signature = 'transfer
                             {--from= : Source tool}
                             {--to= : Target tool}
@@ -53,13 +57,14 @@ class TransferCommand extends Command
                 $sessions = $mapper->remap($fromPath, $toPath, $sessions);
             }
 
-            $writer->write($sessions, $projectPath);
+            $result = ProjectTargets::write($writer, $sessions, $project);
         } catch (\Throwable $e) {
             $this->error('Transfer failed: ' . $e->getMessage());
             return self::FAILURE;
         }
 
         $this->info("Transferred {$sessions->count()} session(s) from {$fromTool} to {$toTool}");
+        $this->reportFallback($result);
         return self::SUCCESS;
     }
 }

@@ -230,6 +230,8 @@ it('Continue parser reads sessions/<id>.json with the sessions.json index', func
         expect($sessions)->toHaveCount(2)
             ->and($sessions['c-1']->title)->toBe('Refactor auth')
             ->and($sessions['c-1']->project)->toBe('My App')
+            ->and($sessions['c-1']->projectPath)->toBe('C:/Work/My App')
+            ->and($sessions['c-2']->projectPath)->toBe('/home/dev/site')
             ->and($sessions['c-1']->createdAt->getTimestampMs())->toBe(1736935200000)
             ->and($sessions['c-1']->turns->pluck('content')->all())->toBe(['Split the auth module', 'Here is a plan'])
             ->and($sessions['c-2']->title)->toBe('Fix the footer')

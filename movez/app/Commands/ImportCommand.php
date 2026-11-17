@@ -9,10 +9,14 @@ use App\Services\Packager;
 use App\Services\ProjectConfigFiles;
 use App\Services\PathMapper;
 use App\Services\ToolDetector;
+use App\Commands\Concerns\ReportsProjectFallback;
+use App\Support\ProjectTargets;
 use LaravelZero\Framework\Commands\Command;
 
 class ImportCommand extends Command
 {
+    use ReportsProjectFallback;
+
     protected $signature = 'import
                             {--input= : Path to the bundle file (.cbz or .json)}
                             {--tool= : Target tool (cursor|claude-code|codex|copilot-cli|cline|continue)}
@@ -29,7 +33,8 @@ class ImportCommand extends Command
     {
         $inputPath   = $this->option('input');
         $toolName    = $this->option('tool');
-        $projectPath = $this->option('project') ?? getcwd();
+        $project     = $this->option('project');
+        $projectPath = $project ?? getcwd();
         $fromPath    = $this->option('from-path');
         $toPath      = $this->option('to-path');
 
@@ -66,13 +71,14 @@ class ImportCommand extends Command
         }
 
         try {
-            $writer->write($sessions, (string) $projectPath);
+            $result = ProjectTargets::write($writer, $sessions, $project);
         } catch (\Throwable $e) {
             $this->error('Import failed: ' . $e->getMessage());
             return self::FAILURE;
         }
 
         $this->info("Imported {$sessions->count()} session(s) to {$toolName}");
+        $this->reportFallback($result);
 
         if ($this->option('with-config')) {
             $this->restoreConfig($inputPath, (string) $projectPath, $packager, $encryptor);
