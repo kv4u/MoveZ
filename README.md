@@ -123,9 +123,9 @@ movez import --input=work.cbz --tool=claude-code \
 
 **Copilot CLI** keeps a search index of sessions. If imported sessions don't appear in its history, run `/chronicle reindex` inside Copilot CLI.
 
-**Cline** imports appear in its task history alongside your own tasks. They're written to `~/.cline/data` and to the Cline folder of every VS Code-family editor that has one, so both current and older Cline versions see them. Close the editor before importing (a running Cline can overwrite its task list from memory), then reopen it. Imported tasks show the full conversation; to keep going, start a new task that references it.
+**Cline** imports appear in its task history alongside your own tasks. They're written to `~/.cline/data` and to the Cline folder of every VS Code-family editor that has one, so both current and older Cline versions see them. Close the editor before importing (a running Cline can overwrite its task list from memory), then reopen it. Imported tasks are listed under **History** with Cline's **Legacy** tag (its label for tasks stored in that format) and open with the full conversation; to keep going, start a new task that references it rather than resuming.
 
-**Continue** imports appear in its session history. Pass `--project` (or import from the project folder): Continue lists sessions per workspace, so the path should match the folder you open in the editor. Re-importing updates a session instead of duplicating it.
+**Continue** imports appear in its session history, grouped under the project's folder name. Pass `--project` (or import from the project folder): Continue lists sessions per workspace, so the path should match the folder you open in the editor. Re-importing updates a session instead of duplicating it.
 </details>
 
 ## Sync between machines
