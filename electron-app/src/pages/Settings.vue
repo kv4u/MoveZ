@@ -53,7 +53,7 @@ async function browsePhpPath() {
             type="text"
             placeholder="movez"
             class="flex-1 px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-sm text-slate-200
-                   placeholder-slate-600 focus:outline-none focus:border-brand-500"
+                   placeholder-slate-600 focus:outline-hidden focus:border-brand-500"
           />
           <button
             class="px-3 py-2 rounded-xl bg-slate-700 border border-slate-600 text-sm text-slate-300
@@ -80,7 +80,7 @@ async function browsePhpPath() {
             type="text"
             placeholder="php  (uses the bundled PHP)"
             class="flex-1 px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-sm text-slate-200
-                   placeholder-slate-600 focus:outline-none focus:border-brand-500"
+                   placeholder-slate-600 focus:outline-hidden focus:border-brand-500"
           />
           <button
             class="px-3 py-2 rounded-xl bg-slate-700 border border-slate-600 text-sm text-slate-300
@@ -105,7 +105,7 @@ async function browsePhpPath() {
           type="url"
           placeholder="https://your-sync-server.com"
           class="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-sm text-slate-200
-                 placeholder-slate-600 focus:outline-none focus:border-brand-500"
+                 placeholder-slate-600 focus:outline-hidden focus:border-brand-500"
         />
         <p class="text-xs text-slate-600 mt-1">Leave blank to disable sync features</p>
       </div>
@@ -118,7 +118,7 @@ async function browsePhpPath() {
           type="password"
           placeholder="Your sync server API token"
           class="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-sm text-slate-200
-                 placeholder-slate-600 focus:outline-none focus:border-brand-500"
+                 placeholder-slate-600 focus:outline-hidden focus:border-brand-500"
           autocomplete="off"
         />
         <p class="text-xs text-slate-600 mt-1">

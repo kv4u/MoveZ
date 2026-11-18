@@ -160,7 +160,7 @@ const tools = ['all', ...READABLE_TOOLS]
         type="text"
         placeholder="Search sessions…"
         class="flex-1 min-w-[180px] max-w-sm px-4 py-2 rounded-xl bg-slate-800 border border-slate-700
-               text-slate-200 text-sm placeholder-slate-600 focus:outline-none focus:border-brand-500 transition-colors"
+               text-slate-200 text-sm placeholder-slate-600 focus:outline-hidden focus:border-brand-500 transition-colors"
       />
 
       <!-- Selection actions (shown when items selected) -->
@@ -170,7 +170,7 @@ const tools = ['all', ...READABLE_TOOLS]
           class="flex items-center gap-2 text-xs text-slate-400 cursor-pointer select-none"
           title="Encrypt with your MoveZ key (AES-256-GCM). The importing machine needs the same key."
         >
-          <input v-model="encryptBundle" type="checkbox" class="w-3.5 h-3.5 rounded accent-[#eeeaa2]" />
+          <input v-model="encryptBundle" type="checkbox" class="w-3.5 h-3.5 rounded-sm accent-[#eeeaa2]" />
           Encrypt
         </label>
         <button
@@ -233,13 +233,13 @@ const tools = ['all', ...READABLE_TOOLS]
           <label class="block text-xs text-slate-400 mb-1">Old path (optional)</label>
           <input v-model="importFromPath" type="text" placeholder="e.g. C:\old\projects"
             class="w-full px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-200
-                   placeholder-slate-600 focus:outline-none focus:border-brand-500" />
+                   placeholder-slate-600 focus:outline-hidden focus:border-brand-500" />
         </div>
         <div>
           <label class="block text-xs text-slate-400 mb-1">New path (optional)</label>
           <input v-model="importToPath" type="text" placeholder="e.g. C:\new\projects"
             class="w-full px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-200
-                   placeholder-slate-600 focus:outline-none focus:border-brand-500" />
+                   placeholder-slate-600 focus:outline-hidden focus:border-brand-500" />
         </div>
       </div>
 
@@ -291,7 +291,7 @@ const tools = ['all', ...READABLE_TOOLS]
           <div class="text-slate-500 text-sm max-w-sm mx-auto space-y-1">
             <p>Sessions are AI chat conversations stored by tools like Cursor or Claude Code.</p>
             <p class="text-slate-600">Make sure the CLI Path and PHP Path are set correctly in <router-link to="/settings" class="text-brand-400 underline">Settings</router-link>, then try <button class="text-brand-400 underline" @click="sessions.load()">refreshing</button>.</p>
-            <p class="text-slate-600 pt-2 text-xs">Run <span class="font-mono bg-slate-800 px-1 rounded">Doctor</span> in the sidebar to verify which tools are detected on this machine.</p>
+            <p class="text-slate-600 pt-2 text-xs">Run <span class="font-mono bg-slate-800 px-1 rounded-sm">Doctor</span> in the sidebar to verify which tools are detected on this machine.</p>
           </div>
         </div>
       </template>

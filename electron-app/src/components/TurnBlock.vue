@@ -32,7 +32,7 @@ const showDiffs = ref(false)
       </div>
 
       <!-- Content -->
-      <div class="text-sm text-slate-200 leading-relaxed whitespace-pre-wrap break-words">{{ turn.content }}</div>
+      <div class="text-sm text-slate-200 leading-relaxed whitespace-pre-wrap wrap-break-word">{{ turn.content }}</div>
 
       <!-- Reasoning trace -->
       <details v-if="turn.reasoning_trace" class="mt-2">
@@ -49,7 +49,7 @@ const showDiffs = ref(false)
         <summary class="text-xs text-slate-500 cursor-pointer hover:text-slate-400 select-none">
           {{ turn.tool_calls.length }} tool call(s)
         </summary>
-        <pre class="mt-1 text-xs text-slate-400 font-mono bg-slate-800/50 rounded p-2 overflow-x-auto">{{ JSON.stringify(turn.tool_calls, null, 2) }}</pre>
+        <pre class="mt-1 text-xs text-slate-400 font-mono bg-slate-800/50 rounded-sm p-2 overflow-x-auto">{{ JSON.stringify(turn.tool_calls, null, 2) }}</pre>
       </details>
 
       <!-- File diffs -->

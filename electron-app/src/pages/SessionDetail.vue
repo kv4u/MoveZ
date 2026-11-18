@@ -104,7 +104,7 @@ async function exportSession() {
             class="flex items-center gap-2 text-xs text-slate-400 cursor-pointer select-none"
             title="Encrypt with your MoveZ key (AES-256-GCM). The importing machine needs the same key."
           >
-            <input v-model="encryptBundle" type="checkbox" class="w-3.5 h-3.5 rounded accent-[#eeeaa2]" />
+            <input v-model="encryptBundle" type="checkbox" class="w-3.5 h-3.5 rounded-sm accent-[#eeeaa2]" />
             Encrypt
           </label>
           <button
