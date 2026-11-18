@@ -143,7 +143,7 @@ function reset() {
             type="text"
             placeholder="/Users/old/projects/myapp"
             class="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-sm text-slate-200
-                   placeholder-slate-600 focus:outline-none focus:border-brand-500"
+                   placeholder-slate-600 focus:outline-hidden focus:border-brand-500"
           />
         </div>
         <div>
@@ -153,7 +153,7 @@ function reset() {
             type="text"
             placeholder="/home/new/projects/myapp"
             class="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-sm text-slate-200
-                   placeholder-slate-600 focus:outline-none focus:border-brand-500"
+                   placeholder-slate-600 focus:outline-hidden focus:border-brand-500"
           />
         </div>
       </div>

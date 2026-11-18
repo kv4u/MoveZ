@@ -53,7 +53,7 @@ const actions = [
       <div class="flex flex-wrap gap-1.5 mt-6 min-h-6">
         <template v-if="toolCount">
           <ToolBadge v-for="tool in Object.keys(sessions.byTool)" :key="tool" :tool="tool" size="sm"
-                     class="!bg-black/30 backdrop-blur" />
+                     class="bg-black/30! backdrop-blur-sm" />
         </template>
         <span v-else class="text-white/60 text-sm">No tools detected yet</span>
       </div>

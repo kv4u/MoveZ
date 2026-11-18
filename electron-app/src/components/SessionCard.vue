@@ -48,7 +48,7 @@ function handleClick(e: MouseEvent) {
       @click.stop="emit('toggle-select')"
     >
       <div
-        class="w-4 h-4 rounded border-2 flex items-center justify-center transition-colors"
+        class="w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-colors"
         :class="selected ? 'bg-brand-500 border-brand-500' : 'border-slate-500'"
       >
         <svg v-if="selected" class="w-2.5 h-2.5 text-ink" fill="currentColor" viewBox="0 0 20 20">
